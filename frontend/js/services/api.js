@@ -30,8 +30,12 @@ class ApiService {
       headers
     };
 
+    if (config.method === 'GET') {
+      config.cache = 'no-store';
+    }
+
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), options.timeout || 8000);
+    const timeoutId = setTimeout(() => controller.abort(), options.timeout || 20000);
     config.signal = controller.signal;
 
     try {

@@ -33,10 +33,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Update Location Everywhere
   async function updateLocation(newLoc, triggerFetch = true) {
+    const lat = Number(newLoc.lat);
+    const lng = Number(newLoc.lng);
+    if (!Number.isFinite(lat) || !Number.isFinite(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+      showToast('This location does not have valid coordinates');
+      return;
+    }
     selectedLoc = {
       name: newLoc.name || 'Resolving place…',
-      lat: parseFloat(newLoc.lat),
-      lng: parseFloat(newLoc.lng)
+      lat,
+      lng
     };
     localStorage.setItem('limitflood_selected_location', JSON.stringify(selectedLoc));
 
@@ -59,9 +65,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (triggerFetch) {
       const requestVersion = ++locationVersion;
+      const requestLocation = { ...selectedLoc };
       // Keep the dashboard responsive and fetch both resources in parallel.
       // A shelter/geocoder failure must not prevent risk data from rendering.
-      void Promise.allSettled([loadDashboardData(requestVersion), loadSheltersData(requestVersion)]);
+      void Promise.allSettled([
+        loadDashboardData(requestVersion, requestLocation),
+        loadSheltersData(requestVersion, requestLocation)
+      ]);
     }
   }
 
@@ -210,9 +220,9 @@ document.addEventListener('DOMContentLoaded', () => {
   setInterval(updateTimestamp, 60000);
 
   // 3. Load Overview & Environmental Data
-  async function loadDashboardData(requestVersion = locationVersion) {
-    const weatherUrl = `/weather?lat=${selectedLoc.lat}&lng=${selectedLoc.lng}`;
-    const floodUrl = `/flood-risk?lat=${selectedLoc.lat}&lng=${selectedLoc.lng}`;
+  async function loadDashboardData(requestVersion = locationVersion, requestLocation = selectedLoc) {
+    const weatherUrl = `/weather?lat=${requestLocation.lat}&lng=${requestLocation.lng}`;
+    const floodUrl = `/flood-risk?lat=${requestLocation.lat}&lng=${requestLocation.lng}`;
 
     const weatherPromise = ApiService.get(weatherUrl);
     const floodPromise = ApiService.get(floodUrl);
@@ -330,7 +340,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 
-  let currentPrecipData = [0.5, 1.2, 2.8, 5.4, 8.2, 12.0, 9.5, 4.2, 1.8, 0.6, 0.2, 0.0];
+  let currentPrecipData = [];
 
   // Render Precipitation Canvas Bar Chart (High DPR Responsive)
   function drawPrecipChart(data) {
@@ -348,6 +358,8 @@ document.addEventListener('DOMContentLoaded', () => {
     ctx.scale(dpr, dpr);
     
     ctx.clearRect(0, 0, displayWidth, displayHeight);
+
+    if (!currentPrecipData.length) return;
 
     // Draw background grid lines
     ctx.strokeStyle = 'rgba(0,0,0,0.06)';
@@ -392,7 +404,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.fillStyle = '#1A1A1A';
         ctx.font = '600 9px Inter, sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText(`${val.toFixed(1)}m`, x + (barWidth / 2), y - 4);
+        ctx.fillText(`${val.toFixed(1)} mm`, x + (barWidth / 2), y - 4);
       }
 
       // Render time label on X axis
@@ -464,7 +476,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
           const location = await reverseGeocode(lat, lng);
-          await updateLocation(location, false);
+          // Fetch again for the final geocoded coordinates. The first request
+          // was started with the temporary "Resolving place" state and may
+          // have been discarded by the location-version guard.
+          await updateLocation(location, true);
           showToast(`Location set to ${location.name}`);
         } catch (err) {
           console.warn('Could not resolve dropped pin:', err.message);
@@ -782,9 +797,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   // 8. Load Shelters Data & Route Navigation
-  async function loadSheltersData(requestVersion = locationVersion) {
+  async function loadSheltersData(requestVersion = locationVersion, requestLocation = selectedLoc) {
     try {
-      const res = await ApiService.get(`/shelters?lat=${selectedLoc.lat}&lng=${selectedLoc.lng}&locationName=${encodeURIComponent(selectedLoc.name)}`);
+      const res = await ApiService.get(`/shelters?lat=${requestLocation.lat}&lng=${requestLocation.lng}&locationName=${encodeURIComponent(requestLocation.name)}`);
       if (requestVersion !== locationVersion) return;
       const sheltersList = document.getElementById('shelters-list');
 
@@ -892,7 +907,7 @@ document.addEventListener('DOMContentLoaded', () => {
             await updateLocation({ name: 'Resolving place…', lat, lng });
             try {
               const location = await reverseGeocode(lat, lng);
-              await updateLocation(location, false);
+              await updateLocation(location, true);
             } catch (err) {
               console.warn('Could not resolve GPS place name:', err.message);
             }
@@ -1011,6 +1026,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // Refresh telemetry periodically while the same location remains open.
   setInterval(() => {
     const requestVersion = ++locationVersion;
-    void loadDashboardData(requestVersion);
-  }, 5 * 60 * 1000);
+    void loadDashboardData(requestVersion, { ...selectedLoc });
+  }, 60 * 1000);
 });

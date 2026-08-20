@@ -189,9 +189,9 @@
           document.getElementById('landing-timestamp').textContent = `Updated ${new Date(res.data.lastFetched || Date.now()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
         }
       } catch (e) {
-        document.getElementById('landing-score').textContent = '28';
-        document.getElementById('landing-location-label').textContent = 'Low Risk — Demo: Lucknow';
-        document.getElementById('landing-timestamp').textContent = 'Updated live';
+        document.getElementById('landing-score').textContent = '--';
+        document.getElementById('landing-location-label').textContent = 'Live risk data unavailable';
+        document.getElementById('landing-timestamp').textContent = 'Unable to update';
       }
 
       // 4. Cursor-reactive 3D energy field for the lower landing page

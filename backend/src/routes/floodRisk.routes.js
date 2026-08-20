@@ -2,9 +2,9 @@ const express = require('express');
 const fetch = globalThis.fetch || ((...args) => import('node-fetch').then(({default: fetch}) => fetch(...args)));
 const router = express.Router();
 
-// 5-Minute In-Memory Telemetry Cache
+// Short cache prevents duplicate requests without making the UI appear frozen.
 const telemetryCache = new Map();
-const CACHE_TTL_MS = 5 * 60 * 1000;
+const CACHE_TTL_MS = 60 * 1000;
 
 // Helper: Fetch with timeout
 async function fetchWithTimeout(url, timeoutMs = 8000) {
@@ -23,8 +23,11 @@ async function fetchWithTimeout(url, timeoutMs = 8000) {
 // Real Flood-Risk Data Calculation based on Open-Meteo API
 router.get('/', async (req, res) => {
   try {
-    const lat = parseFloat(req.query.lat) || 26.8467;
-    const lng = parseFloat(req.query.lng) || 80.9462;
+    const lat = Number(req.query.lat);
+    const lng = Number(req.query.lng);
+    if (!Number.isFinite(lat) || !Number.isFinite(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+      return res.status(400).json({ success: false, message: 'Valid latitude and longitude are required' });
+    }
     const cacheKey = `risk_${lat.toFixed(3)}_${lng.toFixed(3)}`;
 
     // Return instant cached response if valid
@@ -33,36 +36,44 @@ router.get('/', async (req, res) => {
       return res.json({ success: true, data: cached.data });
     }
 
-    let data = {};
-    let liveData = false;
+    let data;
     const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=precipitation,rain,relative_humidity_2m,wind_speed_10m&hourly=precipitation,soil_moisture_0_to_1cm,relative_humidity_2m&daily=precipitation_sum&timezone=auto`;
     
     try {
       const response = await fetchWithTimeout(weatherUrl, 8000);
       if (!response.ok) throw new Error(`Open-Meteo returned ${response.status}`);
       data = await response.json();
-      liveData = Boolean(data.current || data.hourly || data.daily);
     } catch (fetchErr) {
-      console.warn('[FLOOD RISK] Open-Meteo timeout/error, using fast regional model:', fetchErr.message);
+      console.warn('[FLOOD RISK] Open-Meteo unavailable:', fetchErr.message);
+      return res.status(503).json({ success: false, message: 'Live flood-risk data is temporarily unavailable' });
     }
 
-    const current = data.current || {};
-    const daily = data.daily || {};
-    const hourly = data.hourly || {};
+    const current = data.current;
+    const daily = data.daily;
+    const hourly = data.hourly;
+    if (!current || !daily || !hourly || !Array.isArray(daily.precipitation_sum) || !Array.isArray(hourly.precipitation)) {
+      return res.status(502).json({ success: false, message: 'Live flood-risk response was incomplete' });
+    }
 
     // 1. Instantaneous Rain Rate (mm/h)
-    const currentRain = current.precipitation !== undefined ? current.precipitation : (current.rain || 0);
+    const currentRain = Number(current.precipitation ?? current.rain);
 
     // 2. 24-Hour Accumulated Rainfall (mm)
-    const dailyPrecipSum = (daily.precipitation_sum && daily.precipitation_sum.length > 0) ? daily.precipitation_sum[0] : (currentRain * 12);
+    const dailyPrecipSum = Number(daily.precipitation_sum[0]);
+    if (![currentRain, dailyPrecipSum].every(Number.isFinite)) {
+      return res.status(502).json({ success: false, message: 'Live rainfall response contained invalid values' });
+    }
 
     // 3. Soil Moisture Saturation (0 to 1 cm layer, m³/m³ converted to %)
-    let soilMoisturePct = 40;
+    let soilMoisturePct;
     if (hourly.soil_moisture_0_to_1cm && hourly.soil_moisture_0_to_1cm.length > 0) {
       const latestSoil = hourly.soil_moisture_0_to_1cm[0];
       soilMoisturePct = Math.min(100, Math.round(latestSoil * 200));
-    } else if (current.relative_humidity_2m) {
+    } else if (Number.isFinite(current.relative_humidity_2m)) {
       soilMoisturePct = Math.min(95, Math.round(current.relative_humidity_2m * 0.85));
+    }
+    if (!Number.isFinite(soilMoisturePct)) {
+      return res.status(502).json({ success: false, message: 'Live soil-moisture response was unavailable' });
     }
 
 
@@ -131,8 +142,8 @@ router.get('/', async (req, res) => {
           pct: Math.min(90, Math.round(score * 0.9)) 
         }
       },
-      source: liveData ? 'Open-Meteo live data & Hydrologic Risk Model' : 'Fallback regional model (Open-Meteo unavailable)',
-      liveData
+      source: 'Open-Meteo live data & Hydrologic Risk Model',
+      liveData: true
     };
 
     telemetryCache.set(cacheKey, { timestamp: Date.now(), data: riskPayload });
