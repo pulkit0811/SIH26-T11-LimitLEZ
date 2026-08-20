@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Account — LimitFLOOD</title>
+  <link rel="icon" type="image/png" href="../assets/limitlez-favicon.png">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/auth.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="centered-layout">
+    <div style="margin-bottom: 2rem; text-align: center;">
+      <div class="logo" style="justify-content: center; margin-bottom: 1rem;">
+        <div class="logo-icon">~</div>
+        <span>LimitFLOOD</span>
+      </div>
+      <!-- Step Indicator Dashes -->
+      <div style="display: flex; gap: 6px; justify-content: center;">
+        <div style="width: 24px; height: 3px; background: var(--bg-dark); border-radius: 2px;"></div>
+        <div style="width: 24px; height: 3px; background: var(--border); border-radius: 2px;"></div>
+        <div style="width: 24px; height: 3px; background: var(--border); border-radius: 2px;"></div>
+      </div>
+    </div>
+
+    <div class="card" style="width: 100%; max-width: 440px;">
+      <h2 class="heading-md" style="margin-bottom: 0.25rem;">Create account</h2>
+      <p style="color: var(--accent-orange-hover); font-size: 0.85rem; margin-bottom: 1.5rem;">
+        Join LimitFLOOD to monitor flood risk in real time.
+      </p>
+
+      <div id="error-message" class="error-banner" style="display: none;"></div>
+
+      <form id="register-form">
+        <div class="form-group">
+          <label class="form-label" for="name">Full name</label>
+          <input type="text" id="name" class="form-input" placeholder="Alex Johnson" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="email">Email address</label>
+          <input type="email" id="email" class="form-input" placeholder="alex@example.com" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="phone">Phone number</label>
+          <input type="tel" id="phone" class="form-input" placeholder="+91 98765 43210" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password">Password</label>
+          <input type="password" id="password" class="form-input" placeholder="Choose a strong password" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="confirmPassword">Confirm password</label>
+          <input type="password" id="confirmPassword" class="form-input" placeholder="Repeat your password" required>
+        </div>
+
+        <button type="submit" id="submit-btn" class="btn btn-primary btn-full" style="margin-top: 1rem;">Continue →</button>
+      </form>
+
+      <p style="text-align: center; font-size: 0.85rem; margin-top: 1.5rem; color: var(--text-muted);">
+        Already have an account? <a href="signin.html" style="color: var(--accent-green-dark); font-weight: 600;">Sign in</a>
+      </p>
+    </div>
+  </div>
+
+  <script src="../js/services/api.js"></script>
+  <script src="../js/services/auth.service.js"></script>
+  <script src="../js/pages/register.js"></script>
+</body>
+</html>

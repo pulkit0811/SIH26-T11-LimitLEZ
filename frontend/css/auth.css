@@ -1,0 +1,80 @@
+/* Auth Pages Specific CSS */
+.auth-brand-panel {
+  background-color: var(--bg-dark);
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  background-image: radial-gradient(#333 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.auth-form-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background-color: var(--bg-primary);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 400px;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 1.5rem 0;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.divider::before, .divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid var(--border);
+}
+
+.divider span {
+  padding: 0 0.75rem;
+}
+
+.privacy-note {
+  font-size: 0.75rem;
+  color: var(--accent-orange-hover);
+  text-align: center;
+  margin-top: 2rem;
+  line-height: 1.4;
+}
+
+.error-banner {
+  background-color: var(--accent-red-light);
+  color: var(--accent-red);
+  padding: 0.75rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+/* Mobile Responsive Auth Rules */
+@media (max-width: 768px) {
+  .auth-brand-panel {
+    padding: 1.75rem 1.25rem;
+  }
+
+  .auth-brand-panel .brand-footer {
+    display: none;
+  }
+
+  .auth-form-panel {
+    padding: 1.5rem 1rem 3rem;
+  }
+
+  .auth-card {
+    max-width: 100%;
+  }
+}
+

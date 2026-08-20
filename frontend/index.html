@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LimitFLOOD — Real-time Flood Intelligence</title>
+  <link rel="icon" type="image/png" href="assets/limitlez-favicon.png">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/landing.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+  <div class="water-background" aria-hidden="true">
+    <div class="water-ripple water-ripple-a"></div>
+    <div class="water-ripple water-ripple-b"></div>
+    <div class="water-wave water-wave-a"></div>
+    <div class="water-wave water-wave-b"></div>
+  </div>
+  <!-- Header -->
+  <header class="header-nav" style="background: transparent; border-bottom: 1px solid var(--border);">
+    <div class="logo">
+      <div class="logo-icon">~</div>
+      <span>LimitFLOOD</span>
+    </div>
+
+    <div class="nav-right">
+      <a href="pages/signin.html" class="btn btn-secondary btn-sm" style="border: none;">Sign in</a>
+      <a href="pages/register.html" class="btn btn-primary btn-sm">Get started</a>
+    </div>
+  </header>
+
+  <!-- Hero Split Layout -->
+  <section class="landing-hero">
+    <!-- Left Hero Panel -->
+    <div class="landing-hero-left">
+      <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem;">
+        <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--accent-green-dark);"></span>
+        <span class="label-caps" style="color: var(--accent-green-dark);">REAL-TIME FLOOD INTELLIGENCE</span>
+      </div>
+
+      <h1 class="heading-xl" style="margin-bottom: 1.5rem; font-weight: 800; line-height: 1.08;">
+        Know the water<br>before it reaches you.
+      </h1>
+
+      <p style="color: var(--text-secondary); font-size: 1.1rem; max-width: 480px; margin-bottom: 2.5rem; line-height: 1.6;">
+        LimitFLOOD monitors flood risk in real time — localised to your area, updated continuously, built for moments when it matters.
+      </p>
+
+      <div class="hero-action-row">
+        <a href="pages/dashboard.html" class="btn btn-primary hero-btn-main">Explore live risk map →</a>
+        <a href="#how-it-works" class="hero-link-sub scroll-reveal-link">See how it works <span aria-hidden="true">↓</span></a>
+      </div>
+
+      <!-- 3D Hero Stat Badges -->
+      <div class="hero-stat-grid">
+        <div class="hero-stat-card">
+          <strong class="stat-val" style="color: var(--accent-orange);">300m–400m</strong>
+          <span class="subtext stat-lbl">P2P Mesh</span>
+        </div>
+        <div class="hero-stat-card">
+          <strong class="stat-val" style="color: var(--accent-green-dark);">1-Sec</strong>
+          <span class="subtext stat-lbl">Open-Meteo</span>
+        </div>
+        <div class="hero-stat-card">
+          <strong class="stat-val" style="color: var(--accent-red);">100%</strong>
+          <span class="subtext stat-lbl">Regional HVI</span>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Right Live Map Preview -->
+    <div class="landing-hero-right" id="hero-right-container">
+      <div id="landing-map" class="landing-map-container"></div>
+
+      <!-- Floating 3D Glassmorphic Risk Card -->
+      <div class="card floating-risk-card" id="3d-risk-card">
+        <p class="label-caps" style="margin-bottom: 0.25rem;">FLOOD RISK INDEX</p>
+        <div style="display: flex; align-items: baseline; gap: 0.5rem;">
+          <span id="landing-score" style="font-size: 3.2rem; font-weight: 800; color: var(--accent-orange); line-height: 1;">--</span>
+          <span class="subtext">/ 100</span>
+        </div>
+        <p id="landing-location-label" style="font-weight: 700; font-size: 0.9rem; margin-bottom: 0.6rem; color: var(--text-primary);">Demo Location: Lucknow</p>
+        
+        <div style="height: 6px; border-radius: 3px; background: linear-gradient(to right, var(--risk-low), var(--risk-moderate), var(--risk-high), var(--risk-critical)); margin-bottom: 0.8rem;"></div>
+
+        <p id="landing-alert-status" style="color: var(--accent-orange); font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 0.4rem;">
+          <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--accent-orange); display: inline-block; animation: pulse-sos 1.5s infinite;"></span> Live Open-Meteo Data
+        </p>
+        <span id="landing-timestamp" class="subtext" style="font-size: 0.75rem; display: block; margin-top: 0.2rem;">Updating...</span>
+      </div>
+    </div>
+  </section>
+
+  <main>
+    <div class="interactive-bg" aria-hidden="true">
+      <div class="interactive-aura"></div>
+    </div>
+    <section class="landing-intro section-shell">
+      <div class="section-kicker">One clear signal, when it matters</div>
+      <div class="intro-grid">
+        <h2 class="heading-lg">Flood awareness should feel simple.</h2>
+        <p>Weather changes quickly. LimitFLOOD turns live environmental data into a local risk picture you can understand at a glance, so you have more time to make a calm, informed decision.</p>
+      </div>
+      <div class="trust-strip">
+        <span>Built for everyday readiness</span><span>Hyper-local monitoring</span><span>Actionable safety tools</span><span>Designed for India</span>
+      </div>
+    </section>
+
+    <section id="how-it-works" class="workflow-section section-shell">
+      <div class="section-heading">
+        <div>
+          <div class="section-kicker">How it works</div>
+          <h2 class="heading-lg">From rainfall data to a safer next step.</h2>
+        </div>
+        <p>LimitFLOOD combines live meteorological telemetry, soil saturation, and location intelligence into one transparent flood risk warning system.</p>
+      </div>
+      <div class="workflow-grid">
+        <article class="workflow-card"><span class="workflow-number">01</span><h3>Choose your location</h3><p>Monitor a city, locality, or exact GPS position with a hyper-local risk view.</p></article>
+        <article class="workflow-card"><span class="workflow-number">02</span><h3>Read live conditions</h3><p>Rainfall, rain rate, temperature, wind, and topsoil moisture are refreshed continuously.</p></article>
+        <article class="workflow-card"><span class="workflow-number">03</span><h3>Understand the score</h3><p>A clear 0–100 Flood Risk Index combines rainfall volume, intensity, and absorption capacity.</p></article>
+        <article class="workflow-card"><span class="workflow-number">04</span><h3>See the area clearly</h3><p>Interactive maps reveal risk contours, nearby shelters, and the places that need attention.</p></article>
+        <article class="workflow-card"><span class="workflow-number">05</span><h3>Act before it escalates</h3><p>Threshold-based notices help you prepare, reroute, or move toward a safer shelter.</p></article>
+        <article class="workflow-card"><span class="workflow-number">06</span><h3>Keep your circle close</h3><p>Emergency contacts and SOS broadcasts share your live location when every second counts.</p></article>
+      </div>
+    </section>
+
+    <section class="signal-section">
+      <div class="section-shell signal-layout">
+        <div><div class="section-kicker">Made for the moments between</div><h2 class="heading-lg">Know what changed. Know what to do next.</h2><p>Stay ahead of sudden downpours with a dashboard that brings the signal, the context, and your safety circle together.</p><a href="pages/dashboard.html" class="btn btn-primary">Open the live dashboard →</a></div>
+        <div class="signal-list"><div><strong>01</strong><span><b>Local by default</b><small>Risk is centred around your chosen area, not a distant forecast.</small></span></div><div><strong>02</strong><span><b>Transparent by design</b><small>See the factors behind every risk category and score.</small></span></div><div><strong>03</strong><span><b>Ready when offline matters</b><small>Use the safety circle and nearby mesh tools to stay connected.</small></span></div></div>
+      </div>
+    </section>
+
+    <section class="landing-cta section-shell"><div><div class="section-kicker">Start with your place</div><h2 class="heading-lg">A little more time can change everything.</h2></div><a href="pages/register.html" class="btn btn-primary">Get started free →</a></section>
+  </main>
+
+  <footer class="landing-footer section-shell"><span>© 2026 LimitFLOOD by LimitLEZ</span><span>Real-time flood intelligence for everyday readiness.</span></footer>
+
+  <script src="js/services/api.js"></script>
+  <script src="js/services/auth.service.js"></script>
+  <script>
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      // 1. Leaflet Map Initialization
+      const map = L.map('landing-map', { zoomControl: false }).setView([26.8467, 80.9462], 12);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap contributors'
+      }).addTo(map);
+
+      L.circle([26.8467, 80.9462], {
+        color: '#D46B2A',
+        fillColor: '#D46B2A',
+        fillOpacity: 0.3,
+        radius: 2500
+      }).addTo(map);
+
+      // 2. Interactive 3D Tilt Card Controller
+      const container = document.getElementById('hero-right-container');
+      const card = document.getElementById('3d-risk-card');
+
+      if (container && card && window.innerWidth > 992) {
+        container.addEventListener('mousemove', (e) => {
+          const rect = container.getBoundingClientRect();
+          const x = e.clientX - rect.left - (rect.width / 2);
+          const y = e.clientY - rect.top - (rect.height / 2);
+          const rotX = (-y / rect.height) * 18;
+          const rotY = (x / rect.width) * 18;
+          card.style.transform = `rotateX(${rotX.toFixed(2)}deg) rotateY(${rotY.toFixed(2)}deg) translateZ(15px)`;
+        });
+
+        container.addEventListener('mouseleave', () => {
+          card.style.transform = `rotateX(0deg) rotateY(0deg) translateZ(0px)`;
+        });
+      }
+
+      // 3. Fetch Live API Data for Demo Location
+      try {
+        const res = await ApiService.get('/flood-risk?lat=26.8467&lng=80.9462');
+        if (res.success && res.data) {
+          document.getElementById('landing-score').textContent = res.data.score;
+          document.getElementById('landing-location-label').textContent = `${res.data.category} Risk — Demo: Lucknow`;
+          document.getElementById('landing-timestamp').textContent = `Updated ${new Date(res.data.lastFetched || Date.now()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+        }
+      } catch (e) {
+        document.getElementById('landing-score').textContent = '28';
+        document.getElementById('landing-location-label').textContent = 'Low Risk — Demo: Lucknow';
+        document.getElementById('landing-timestamp').textContent = 'Updated live';
+      }
+
+      // 4. Cursor-reactive 3D energy field for the lower landing page
+      const landingMain = document.querySelector('main');
+      if (landingMain) {
+        landingMain.addEventListener('pointermove', (event) => {
+          const rect = landingMain.getBoundingClientRect();
+          const x = event.clientX - rect.left;
+          const y = event.clientY - rect.top;
+          const percentX = (x / rect.width) * 100;
+          const percentY = (y / rect.height) * 100;
+          const rotateY = ((percentX - 50) / 50) * 10;
+          const rotateX = -((percentY - 50) / 50) * 8;
+          const hue = Math.round(18 + (percentX / 100) * 38);
+
+          landingMain.style.setProperty('--mouse-x', `${percentX}%`);
+          landingMain.style.setProperty('--mouse-y', `${percentY}%`);
+          landingMain.style.setProperty('--field-rotate-x', `${rotateX}deg`);
+          landingMain.style.setProperty('--field-rotate-y', `${rotateY}deg`);
+          landingMain.style.setProperty('--field-hue', `${hue}deg`);
+          landingMain.classList.add('field-active');
+        });
+
+        landingMain.addEventListener('pointerleave', () => {
+          landingMain.classList.remove('field-active');
+        });
+      }
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Setup Location — LimitFLOOD</title>
+  <link rel="icon" type="image/png" href="../assets/limitlez-favicon.png">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="centered-layout">
+    <div style="margin-bottom: 2rem; text-align: center;">
+      <div class="logo" style="justify-content: center; margin-bottom: 1.5rem;">
+        <div class="logo-icon">~</div>
+        <span>LimitFLOOD</span>
+      </div>
+
+      <div style="width: 48px; height: 48px; background: rgba(74, 155, 110, 0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; color: var(--accent-green-dark); font-size: 1.5rem;">
+        📍
+      </div>
+
+      <h1 class="heading-lg" style="margin-bottom: 0.5rem;">Where do you want to monitor?</h1>
+      <p class="subtext">Enter your location to get local flood-risk updates and alerts.</p>
+    </div>
+
+    <div style="width: 100%; max-width: 440px;">
+      <div class="form-group" style="position: relative;">
+        <input type="text" id="location-search" class="form-input" placeholder="Search city, area or pincode" style="padding-left: 2.5rem; background: #fff;">
+        <span style="position: absolute; left: 0.9rem; top: 0.75rem; color: var(--text-muted);">🔍</span>
+        <div id="search-results" class="card" style="display: none; position: absolute; top: 100%; left: 0; right: 0; z-index: 10; margin-top: 4px; padding: 0.5rem 0; max-height: 200px; overflow-y: auto;"></div>
+      </div>
+
+      <button id="use-gps-btn" class="btn btn-secondary btn-full" style="background: #fff; margin-bottom: 2rem; border-color: var(--border);">
+        ⊕ Use my current location
+      </button>
+
+      <div style="text-align: left;">
+        <p class="label-caps" style="margin-bottom: 0.75rem;">RECENT LOCATIONS</p>
+        <div class="card" style="padding: 0; background: #fff; border-radius: var(--radius-sm);">
+          <div class="location-item" data-name="Lucknow, UP" data-lat="26.8467" data-lng="80.9462" style="padding: 0.9rem 1.2rem; border-bottom: 1px solid var(--border); cursor: pointer; display: flex; align-items: center; gap: 0.75rem; font-weight: 500;">
+            <span style="color: var(--accent-red);">📍</span> Lucknow, UP
+          </div>
+          <div class="location-item" data-name="Gomti Nagar, UP" data-lat="26.8500" data-lng="80.9990" style="padding: 0.9rem 1.2rem; border-bottom: 1px solid var(--border); cursor: pointer; display: flex; align-items: center; gap: 0.75rem; font-weight: 500;">
+            <span style="color: var(--accent-red);">📍</span> Gomti Nagar, UP
+          </div>
+          <div class="location-item" data-name="Hazratganj, UP" data-lat="26.8460" data-lng="80.9400" style="padding: 0.9rem 1.2rem; cursor: pointer; display: flex; align-items: center; gap: 0.75rem; font-weight: 500;">
+            <span style="color: var(--accent-red);">📍</span> Hazratganj, UP
+          </div>
+        </div>
+      </div>
+
+      <p style="font-size: 0.75rem; color: var(--text-muted); text-align: center; margin-top: 2rem;">
+        You can change this later from settings.
+      </p>
+    </div>
+  </div>
+
+  <script src="../js/services/api.js"></script>
+  <script src="../js/services/auth.service.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const searchInput = document.getElementById('location-search');
+      const searchResults = document.getElementById('search-results');
+      const gpsBtn = document.getElementById('use-gps-btn');
+      const locationItems = document.querySelectorAll('.location-item');
+
+      async function saveAndRedirect(name, lat, lng) {
+        localStorage.setItem('limitflood_selected_location', JSON.stringify({ name, lat: parseFloat(lat), lng: parseFloat(lng) }));
+        window.location.href = 'dashboard.html';
+      }
+
+      locationItems.forEach(item => {
+        item.addEventListener('click', () => {
+          saveAndRedirect(item.dataset.name, item.dataset.lat, item.dataset.lng);
+        });
+      });
+
+      gpsBtn.addEventListener('click', () => {
+        if (navigator.geolocation) {
+          gpsBtn.textContent = 'Fetching location...';
+          navigator.geolocation.getCurrentPosition(
+            (pos) => {
+              saveAndRedirect('Current Location', pos.coords.latitude, pos.coords.longitude);
+            },
+            (err) => {
+              alert('Could not retrieve location. Please search manually.');
+              gpsBtn.textContent = '⊕ Use my current location';
+            }
+          );
+        }
+      });
+
+      let debounceTimer;
+      searchInput.addEventListener('input', (e) => {
+        clearTimeout(debounceTimer);
+        const query = e.target.value.trim();
+        if (query.length < 3) {
+          searchResults.style.display = 'none';
+          return;
+        }
+
+        debounceTimer = setTimeout(async () => {
+          try {
+            const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`);
+            const data = await res.json();
+            
+            if (data.length > 0) {
+              searchResults.innerHTML = data.slice(0, 5).map(item => `
+                <div class="search-item" style="padding: 0.6rem 1rem; cursor: pointer; border-bottom: 1px solid #eee; font-size: 0.85rem;" data-name="${item.display_name}" data-lat="${item.lat}" data-lng="${item.lon}">
+                  📍 ${item.display_name}
+                </div>
+              `).join('');
+              searchResults.style.display = 'block';
+
+              document.querySelectorAll('.search-item').forEach(el => {
+                el.addEventListener('click', () => {
+                  saveAndRedirect(el.dataset.name.split(',')[0], el.dataset.lat, el.dataset.lng);
+                });
+              });
+            } else {
+              searchResults.style.display = 'none';
+            }
+          } catch (err) {
+            console.error(err);
+          }
+        }, 400);
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How LimitFLOOD Works — Real-Time Flood Intelligence</title>
+  <link rel="icon" type="image/png" href="../assets/limitlez-favicon.png">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    .step-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 2rem;
+      position: relative;
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+    }
+    .step-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+    .step-num {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--bg-dark);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.1rem;
+      margin-bottom: 1.25rem;
+    }
+    .flow-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 0.9rem;
+      background: #EAE7E1;
+      border-radius: var(--radius-full);
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header-nav">
+    <div class="logo">
+      <div class="logo-icon">~</div>
+      <span>LimitFLOOD</span>
+    </div>
+
+    <div class="nav-right">
+      <a href="../index.html" class="btn btn-secondary btn-sm">← Back to Home</a>
+      <a href="dashboard.html" class="btn btn-primary btn-sm">Explore Dashboard →</a>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section style="padding: 2.5rem 1.25rem 2rem; text-align: center; max-width: 840px; margin: 0 auto;">
+    <div style="display: inline-flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+      <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--accent-orange);"></span>
+      <span class="label-caps" style="color: var(--accent-orange-hover);">PLATFORM ARCHITECTURE & WORKFLOW</span>
+    </div>
+
+    <h1 class="heading-xl" style="font-weight: 800; margin-bottom: 1.25rem;">
+      How LimitFLOOD Protects Communities
+    </h1>
+
+    <p style="font-size: 1.05rem; color: var(--text-secondary); line-height: 1.6; max-width: 680px; margin: 0 auto 2rem;">
+      LimitFLOOD combines live meteorological telemetry, soil saturation index computing, and automated emergency dispatches into a hyper-local flood risk warning system.
+    </p>
+
+    <!-- Visual Flow Ribbon -->
+    <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0.5rem; background: var(--bg-card); padding: 0.85rem 1rem; border-radius: var(--radius-lg); border: 1px solid var(--border); box-shadow: var(--shadow-sm);">
+      <span class="flow-badge">📍 Location</span>
+      <span style="color: var(--text-muted);">→</span>
+      <span class="flow-badge">📡 Open-Meteo API</span>
+      <span style="color: var(--text-muted);">→</span>
+      <span class="flow-badge">📊 Hydrologic Risk Engine</span>
+      <span style="color: var(--text-muted);">→</span>
+      <span class="flow-badge">🗺️ Interactive Map</span>
+      <span style="color: var(--text-muted);">→</span>
+      <span class="flow-badge">🚨 SOS Dispatch</span>
+    </div>
+  </section>
+
+  <!-- 6 Step Process Grid -->
+  <section style="max-width: 1100px; margin: 0 auto 4rem; padding: 0 1.25rem;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 1.25rem;">
+
+      
+      <!-- Step 1 -->
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <h3 class="heading-md" style="margin-bottom: 0.5rem;">Select & Monitor Location</h3>
+        <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.55;">
+          Users specify any city, locality, or exact GPS coordinates. LimitFLOOD leverages OpenStreetMap Nominatim reverse geocoding to resolve hyper-local monitoring zones across India.
+        </p>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <h3 class="heading-md" style="margin-bottom: 0.5rem;">Live Telemetry Collection</h3>
+        <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.55;">
+          Real-time weather API integration pulls 1-hour precipitation intensity, 24-hour accumulated rainfall, surface temperature, wind speed, and topsoil moisture levels (0–1cm depth).
+        </p>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <h3 class="heading-md" style="margin-bottom: 0.5rem;">Multi-Factor Risk Scoring</h3>
+        <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.55;">
+          Our backend risk engine evaluates rainfall volume (45%), instantaneous rain rate (30%), and soil absorption capacity (25%) to output a transparent 0–100 Flood Risk Index categorized into Low, Moderate, High, or Critical.
+        </p>
+      </div>
+
+      <!-- Step 4 -->
+      <div class="step-card">
+        <div class="step-num">4</div>
+        <h3 class="heading-md" style="margin-bottom: 0.5rem;">Interactive Map Visualization</h3>
+        <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.55;">
+          Leaflet.js mapping renders risk contours, radius perimeters, nearby emergency evacuation shelters, and live occupancy status in real time.
+        </p>
+      </div>
+
+      <!-- Step 5 -->
+      <div class="step-card">
+        <div class="step-num">5</div>
+        <h3 class="heading-md" style="margin-bottom: 0.5rem;">Alerts & Warning Notices</h3>
+        <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.55;">
+          Active monitoring automatically triggers flash flood alerts and safe shelter route navigation as rainfall thresholds exceed critical boundaries.
+        </p>
+      </div>
+
+      <!-- Step 6 -->
+      <div class="step-card">
+        <div class="step-num">6</div>
+        <h3 class="heading-md" style="margin-bottom: 0.5rem;">Emergency Contact & SOS Network</h3>
+        <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.55;">
+          Pressing and holding the Emergency SOS button dispatches automated distress broadcasts with live GPS location to configured family and safety circle contacts.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section style="background: var(--bg-dark); color: #fff; padding: 4rem 1.5rem; text-align: center;">
+    <h2 class="heading-lg" style="color: #fff; margin-bottom: 1rem;">Ready to monitor your local flood risk?</h2>
+    <p style="color: #aaa; font-size: 1.05rem; margin-bottom: 2rem; max-width: 500px; margin-left: auto; margin-right: auto;">
+      Access live meteorological intelligence and emergency safety tools built for moments when it matters.
+    </p>
+    <a href="dashboard.html" class="btn" style="background: var(--accent-orange); color: #fff; padding: 0.9rem 2rem; font-size: 1rem; border-radius: var(--radius-sm);">Launch Live Dashboard →</a>
+  </section>
+
+  <script src="../js/services/api.js"></script>
+  <script src="../js/services/auth.service.js"></script>
+</body>
+</html>

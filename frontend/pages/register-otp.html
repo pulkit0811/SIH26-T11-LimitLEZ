@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verify Phone — LimitFLOOD</title>
+  <link rel="icon" type="image/png" href="../assets/limitlez-favicon.png">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/auth.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="centered-layout">
+    <div style="margin-bottom: 2rem; text-align: center;">
+      <div class="logo" style="justify-content: center; margin-bottom: 1rem;">
+        <div class="logo-icon">~</div>
+        <span>LimitFLOOD</span>
+      </div>
+      <!-- Step Indicator Dashes (Step 2 Active) -->
+      <div style="display: flex; gap: 6px; justify-content: center;">
+        <div style="width: 24px; height: 3px; background: var(--border); border-radius: 2px;"></div>
+        <div style="width: 24px; height: 3px; background: var(--bg-dark); border-radius: 2px;"></div>
+        <div style="width: 24px; height: 3px; background: var(--border); border-radius: 2px;"></div>
+      </div>
+    </div>
+
+    <div class="card" style="width: 100%; max-width: 440px;">
+      <h2 class="heading-md" style="margin-bottom: 0.25rem;">Verify your phone</h2>
+      <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 1.5rem;">
+        We sent a 6-digit OTP code to <strong id="display-phone">your phone</strong>.
+      </p>
+
+      <div id="dev-otp-banner" style="display: none; background: #FFF3CD; color: #856404; padding: 0.75rem; border-radius: var(--radius-sm); font-size: 0.85rem; margin-bottom: 1rem;"></div>
+      <div id="error-message" class="error-banner" style="display: none;"></div>
+
+      <form id="otp-form">
+        <div class="form-group">
+          <label class="form-label" for="otp">Enter 6-digit Code</label>
+          <input type="text" id="otp" class="form-input" placeholder="123456" maxlength="6" style="letter-spacing: 0.5rem; text-align: center; font-weight: bold; font-size: 1.2rem;" required>
+        </div>
+
+        <button type="submit" id="submit-btn" class="btn btn-primary btn-full" style="margin-top: 1rem;">Verify & Continue →</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="../js/services/api.js"></script>
+  <script src="../js/services/auth.service.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const phone = sessionStorage.getItem('temp_verify_phone') || '+91 98765 43210';
+      const devOtp = sessionStorage.getItem('temp_dev_otp');
+      
+      document.getElementById('display-phone').textContent = phone;
+      
+      if (devOtp) {
+        const devBanner = document.getElementById('dev-otp-banner');
+        devBanner.textContent = `[Dev Mode] Your OTP code is: ${devOtp}`;
+        devBanner.style.display = 'block';
+      }
+
+      document.getElementById('otp-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const otp = document.getElementById('otp').value.trim();
+        const errorBanner = document.getElementById('error-message');
+        const submitBtn = document.getElementById('submit-btn');
+
+        errorBanner.style.display = 'none';
+        submitBtn.disabled = true;
+
+        try {
+          const response = await AuthService.verifyOtp(phone, otp);
+          if (response.success) {
+            sessionStorage.removeItem('temp_verify_phone');
+            sessionStorage.removeItem('temp_dev_otp');
+            window.location.href = 'location-setup.html';
+          }
+        } catch (error) {
+          errorBanner.textContent = error.message || 'Invalid OTP code';
+          errorBanner.style.display = 'block';
+        } finally {
+          submitBtn.disabled = false;
+        }
+      });
+    });
+  </script>
+</body>
+</html>
