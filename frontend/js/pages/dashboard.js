@@ -45,6 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('overview-location-heading').textContent = selectedLoc.name;
     document.getElementById('current-location-label').textContent = `📍 ${shortName}`;
     document.getElementById('map-info-area').textContent = selectedLoc.name;
+    resetLiveRiskUi();
 
     // Update Mini Map & Main Map
     if (overviewMap) {
@@ -62,6 +63,25 @@ document.addEventListener('DOMContentLoaded', () => {
       // A shelter/geocoder failure must not prevent risk data from rendering.
       void Promise.allSettled([loadDashboardData(requestVersion), loadSheltersData(requestVersion)]);
     }
+  }
+
+  function resetLiveRiskUi() {
+    const scoreEl = document.getElementById('risk-score-value');
+    const categoryEl = document.getElementById('risk-category-label');
+    const markerEl = document.getElementById('risk-marker');
+    const mapScore = document.getElementById('map-info-score');
+    const mapBadge = document.getElementById('map-info-badge');
+    const mapDetails = document.getElementById('map-info-details');
+
+    if (scoreEl) scoreEl.textContent = '--';
+    if (categoryEl) categoryEl.textContent = 'Fetching live data...';
+    if (markerEl) markerEl.style.left = '0%';
+    if (mapScore) mapScore.textContent = '--';
+    if (mapBadge) {
+      mapBadge.textContent = 'Loading';
+      mapBadge.className = 'badge badge-live';
+    }
+    if (mapDetails) mapDetails.textContent = 'Fetching live risk data...';
   }
 
   // Resolve a map pin to a readable place name. Keep a browser-side fallback
@@ -216,8 +236,12 @@ document.addEventListener('DOMContentLoaded', () => {
       const floodRes = await floodPromise;
       if (requestVersion !== locationVersion) return;
       if (floodRes.success && floodRes.data) {
-        const score = floodRes.data.score;
+        const score = Number(floodRes.data.score);
         const category = floodRes.data.category;
+
+        if (!Number.isFinite(score) || !category) {
+          throw new Error('Flood-risk API returned incomplete telemetry');
+        }
 
         const scoreEl = document.getElementById('risk-score-value');
         if (scoreEl) {
@@ -300,6 +324,8 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     } catch (err) {
       console.warn('Flood-risk data unavailable:', err.message);
+      const mapDetails = document.getElementById('map-info-details');
+      if (mapDetails) mapDetails.textContent = 'Live risk data unavailable';
     }
   }
 
@@ -981,4 +1007,10 @@ document.addEventListener('DOMContentLoaded', () => {
   updateLocation(selectedLoc, true);
   loadAlertsData();
   loadContactsData();
+
+  // Refresh telemetry periodically while the same location remains open.
+  setInterval(() => {
+    const requestVersion = ++locationVersion;
+    void loadDashboardData(requestVersion);
+  }, 5 * 60 * 1000);
 });
