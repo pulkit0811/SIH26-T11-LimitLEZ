@@ -7,7 +7,7 @@ const telemetryCache = new Map();
 const CACHE_TTL_MS = 5 * 60 * 1000;
 
 // Helper: Fetch with timeout
-async function fetchWithTimeout(url, timeoutMs = 2500) {
+async function fetchWithTimeout(url, timeoutMs = 8000) {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
   try {
@@ -25,7 +25,7 @@ router.get('/', async (req, res) => {
   try {
     const lat = parseFloat(req.query.lat) || 26.8467;
     const lng = parseFloat(req.query.lng) || 80.9462;
-    const cacheKey = `risk_${lat.toFixed(2)}_${lng.toFixed(2)}`;
+    const cacheKey = `risk_${lat.toFixed(3)}_${lng.toFixed(3)}`;
 
     // Return instant cached response if valid
     const cached = telemetryCache.get(cacheKey);
@@ -34,11 +34,14 @@ router.get('/', async (req, res) => {
     }
 
     let data = {};
+    let liveData = false;
     const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=precipitation,rain,relative_humidity_2m,wind_speed_10m&hourly=precipitation,soil_moisture_0_to_1cm,relative_humidity_2m&daily=precipitation_sum&timezone=auto`;
     
     try {
-      const response = await fetchWithTimeout(weatherUrl, 2500);
+      const response = await fetchWithTimeout(weatherUrl, 8000);
+      if (!response.ok) throw new Error(`Open-Meteo returned ${response.status}`);
       data = await response.json();
+      liveData = Boolean(data.current || data.hourly || data.daily);
     } catch (fetchErr) {
       console.warn('[FLOOD RISK] Open-Meteo timeout/error, using fast regional model:', fetchErr.message);
     }
@@ -128,7 +131,8 @@ router.get('/', async (req, res) => {
           pct: Math.min(90, Math.round(score * 0.9)) 
         }
       },
-      source: 'Open-Meteo Meteorological API & Hydrologic Risk Model'
+      source: liveData ? 'Open-Meteo live data & Hydrologic Risk Model' : 'Fallback regional model (Open-Meteo unavailable)',
+      liveData
     };
 
     telemetryCache.set(cacheKey, { timestamp: Date.now(), data: riskPayload });
@@ -144,4 +148,3 @@ router.get('/', async (req, res) => {
 });
 
 module.exports = router;
-
