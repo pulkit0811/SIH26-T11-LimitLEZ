@@ -43,8 +43,21 @@ router.get('/reverse', async (req, res) => {
       headers: { 'User-Agent': 'LimitFLOOD-App/1.0' }
     });
 
+    if (!response.ok) {
+      throw new Error(`Reverse geocoding failed with status ${response.status}`);
+    }
+
     const data = await response.json();
-    const name = data.display_name ? data.display_name.split(',')[0] : `Area (${parseFloat(lat).toFixed(3)}, ${parseFloat(lng).toFixed(3)})`;
+    const address = data.address || {};
+    const name = address.neighbourhood ||
+      address.suburb ||
+      address.city_district ||
+      address.town ||
+      address.city ||
+      address.village ||
+      address.municipality ||
+      (data.display_name ? data.display_name.split(',')[0].trim() : '') ||
+      `Location (${parseFloat(lat).toFixed(3)}, ${parseFloat(lng).toFixed(3)})`;
     const displayName = data.display_name || name;
 
     res.json({
