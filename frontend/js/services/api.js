@@ -1,6 +1,16 @@
-const API_BASE_URL = (window.location.protocol === 'file:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || !window.location.hostname)
-  ? 'http://localhost:5000/api' 
-  : '/api';
+const isLocalApp = window.location.protocol === 'file:' ||
+  window.location.hostname === 'localhost' ||
+  window.location.hostname === '127.0.0.1' ||
+  !window.location.hostname;
+const isRenderApp = window.location.hostname.endsWith('onrender.com');
+
+// The backend serves the frontend on Render, but this also supports hosting
+// the static frontend separately (for example on Vercel).
+const API_BASE_URL = isLocalApp
+  ? 'http://localhost:5000/api'
+  : isRenderApp
+    ? '/api'
+    : 'https://limitflood.onrender.com/api';
 
 class ApiService {
   static async request(endpoint, options = {}) {
@@ -20,8 +30,13 @@ class ApiService {
       headers
     };
 
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), options.timeout || 8000);
+    config.signal = controller.signal;
+
     try {
       const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+      clearTimeout(timeoutId);
       const data = await response.json();
 
       if (!response.ok) {
@@ -38,13 +53,20 @@ class ApiService {
 
       return data;
     } catch (error) {
+      clearTimeout(timeoutId);
+      if (error.name === 'AbortError') {
+        throw new Error(`Request timed out: ${endpoint}`);
+      }
+      if (error instanceof TypeError && error.message === 'Failed to fetch') {
+        throw new Error(`Unable to reach LimitFLOOD API at ${API_BASE_URL}`);
+      }
       console.error(`[API ERROR] ${endpoint}:`, error.message);
       throw error;
     }
   }
 
-  static get(endpoint) {
-    return this.request(endpoint, { method: 'GET' });
+  static get(endpoint, options = {}) {
+    return this.request(endpoint, { method: 'GET', ...options });
   }
 
   static post(endpoint, body) {

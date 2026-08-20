@@ -3,6 +3,19 @@ const fetch = globalThis.fetch || ((...args) => import('node-fetch').then(({defa
 const router = express.Router();
 const authMiddleware = require('../middleware/auth.middleware');
 
+async function fetchWithTimeout(url, options = {}, timeoutMs = 5000) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const response = await fetch(url, { ...options, signal: controller.signal });
+    clearTimeout(timeoutId);
+    return response;
+  } catch (error) {
+    clearTimeout(timeoutId);
+    throw error;
+  }
+}
+
 // Search location using OpenStreetMap Nominatim API
 router.get('/search', async (req, res) => {
   try {
@@ -11,9 +24,11 @@ router.get('/search', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Query parameter q is required' });
     }
 
-    const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}`, {
+    const response = await fetchWithTimeout(`https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&q=${encodeURIComponent(q)}`, {
       headers: { 'User-Agent': 'LimitFLOOD-App/1.0' }
     });
+
+    if (!response.ok) throw new Error(`Location search failed with status ${response.status}`);
 
     const data = await response.json();
     const results = data.map(item => ({
@@ -39,7 +54,7 @@ router.get('/reverse', async (req, res) => {
       return res.status(400).json({ success: false, message: 'lat and lng parameters are required' });
     }
 
-    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`, {
+    const response = await fetchWithTimeout(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&addressdetails=1&lat=${lat}&lon=${lng}`, {
       headers: { 'User-Agent': 'LimitFLOOD-App/1.0' }
     });
 

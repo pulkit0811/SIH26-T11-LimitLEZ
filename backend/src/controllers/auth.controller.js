@@ -55,7 +55,9 @@ exports.signup = async (req, res) => {
       success: true,
       message: 'Account created successfully. Please verify your phone number.',
       phone,
-      devOtp: process.env.NODE_ENV !== 'production' ? otp : undefined
+      // Set SHOW_DEV_OTP=true on a development/demo deployment to display the
+      // generated OTP in the verification page. Keep it disabled by default.
+      devOtp: (process.env.NODE_ENV !== 'production' || process.env.SHOW_DEV_OTP === 'true') ? otp : undefined
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

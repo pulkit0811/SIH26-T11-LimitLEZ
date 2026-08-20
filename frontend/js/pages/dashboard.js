@@ -56,9 +56,45 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (triggerFetch) {
-      await loadDashboardData();
-      await loadSheltersData();
+      // Keep the dashboard responsive and fetch both resources in parallel.
+      // A shelter/geocoder failure must not prevent risk data from rendering.
+      void Promise.allSettled([loadDashboardData(), loadSheltersData()]);
     }
+  }
+
+  // Resolve a map pin to a readable place name. Keep a browser-side fallback
+  // so a temporary backend geocoder/API error does not replace the name with
+  // raw coordinates.
+  async function reverseGeocode(lat, lng) {
+    try {
+      const res = await ApiService.get(`/locations/reverse?lat=${lat}&lng=${lng}`, { timeout: 5000 });
+      if (res.success && res.location) {
+        const name = res.location.name && !/^location\s*\(/i.test(res.location.name)
+          ? res.location.name
+          : res.location.displayName?.split(',')[0]?.trim();
+        if (name) return { ...res.location, name };
+      }
+    } catch (err) {
+      console.warn('Backend reverse geocoding failed:', err.message);
+    }
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&addressdetails=1&lat=${lat}&lon=${lng}`, {
+      signal: controller.signal,
+      headers: { 'Accept-Language': 'en' }
+    });
+    clearTimeout(timeoutId);
+    if (!response.ok) throw new Error(`Reverse geocoding failed with status ${response.status}`);
+
+    const data = await response.json();
+    const address = data.address || {};
+    const name = address.neighbourhood || address.suburb || address.city_district ||
+      address.town || address.city || address.village || address.municipality ||
+      data.display_name?.split(',')[0]?.trim();
+    if (!name) throw new Error('No place name returned');
+
+    return { name, displayName: data.display_name || name, lat, lng };
   }
 
   // 2. Tab Navigation Router
@@ -153,12 +189,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 3. Load Overview & Environmental Data
   async function loadDashboardData() {
-    try {
-      const [weatherRes, floodRes] = await Promise.all([
-        ApiService.get(`/weather?lat=${selectedLoc.lat}&lng=${selectedLoc.lng}`),
-        ApiService.get(`/flood-risk?lat=${selectedLoc.lat}&lng=${selectedLoc.lng}`)
-      ]);
+    const weatherUrl = `/weather?lat=${selectedLoc.lat}&lng=${selectedLoc.lng}`;
+    const floodUrl = `/flood-risk?lat=${selectedLoc.lat}&lng=${selectedLoc.lng}`;
 
+    const weatherPromise = ApiService.get(weatherUrl);
+    const floodPromise = ApiService.get(floodUrl);
+
+    try {
+      const weatherRes = await weatherPromise;
       if (weatherRes.success && weatherRes.data) {
         document.getElementById('env-temp').textContent = `${weatherRes.data.temperature}°C`;
         document.getElementById('env-rain').textContent = `${weatherRes.data.rainfall} mm/h`;
@@ -167,6 +205,12 @@ document.addEventListener('DOMContentLoaded', () => {
         drawPrecipChart(weatherRes.data.hourlyPrecipitation || []);
       }
 
+    } catch (err) {
+      console.warn('Weather data unavailable:', err.message);
+    }
+
+    try {
+      const floodRes = await floodPromise;
       if (floodRes.success && floodRes.data) {
         const score = floodRes.data.score;
         const category = floodRes.data.category;
@@ -251,9 +295,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
     } catch (err) {
-      console.warn('Using default telemetry fallback:', err.message);
-      drawPrecipChart([0, 0.2, 0.5, 1.2, 0.8, 0.3, 0.1, 0, 0, 0, 0, 0]);
-
+      console.warn('Flood-risk data unavailable:', err.message);
     }
   }
 
@@ -385,15 +427,18 @@ document.addEventListener('DOMContentLoaded', () => {
       mainMap.on('click', async (e) => {
         const { lat, lng } = e.latlng;
         mainMapMarker.setLatLng([lat, lng]);
-        
+
+        // Move and fetch dashboard data immediately; geocoding should not
+        // block weather, flood-risk, or shelter requests.
+        await updateLocation({ name: 'Selected map location', lat, lng });
+
         try {
-          const res = await ApiService.get(`/locations/reverse?lat=${lat}&lng=${lng}`);
-          if (res.success && res.location) {
-            await updateLocation(res.location);
-            showToast(`Location set to ${res.location.name}`);
-          }
+          const location = await reverseGeocode(lat, lng);
+          await updateLocation(location, false);
+          showToast(`Location set to ${location.name}`);
         } catch (err) {
-          await updateLocation({ name: `Location (${lat.toFixed(3)}, ${lng.toFixed(3)})`, lat, lng });
+          console.warn('Could not resolve dropped pin:', err.message);
+          showToast('Place name unavailable for this pin');
         }
       });
     }
@@ -811,7 +856,15 @@ document.addEventListener('DOMContentLoaded', () => {
         modalGpsBtn.textContent = 'Locating GPS...';
         navigator.geolocation.getCurrentPosition(
           async (pos) => {
-            await updateLocation({ name: 'Current GPS Location', lat: pos.coords.latitude, lng: pos.coords.longitude });
+            const lat = pos.coords.latitude;
+            const lng = pos.coords.longitude;
+            await updateLocation({ name: 'Current GPS Location', lat, lng });
+            try {
+              const location = await reverseGeocode(lat, lng);
+              await updateLocation(location, false);
+            } catch (err) {
+              console.warn('Could not resolve GPS place name:', err.message);
+            }
             locationModal.classList.remove('active');
             modalGpsBtn.textContent = '⊕ Use my current GPS location';
             showToast('Updated to live GPS location');
@@ -924,4 +977,3 @@ document.addEventListener('DOMContentLoaded', () => {
   loadAlertsData();
   loadContactsData();
 });
-
