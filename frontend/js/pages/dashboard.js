@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let safetyMap = null;
   let sheltersMap = null;
   let shelterRoutePolyline = null;
+  let locationVersion = 0;
 
   // Toast Helper
   function showToast(message) {
@@ -33,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Update Location Everywhere
   async function updateLocation(newLoc, triggerFetch = true) {
     selectedLoc = {
-      name: newLoc.name || 'Selected Location',
+      name: newLoc.name || 'Resolving place…',
       lat: parseFloat(newLoc.lat),
       lng: parseFloat(newLoc.lng)
     };
@@ -56,9 +57,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (triggerFetch) {
+      const requestVersion = ++locationVersion;
       // Keep the dashboard responsive and fetch both resources in parallel.
       // A shelter/geocoder failure must not prevent risk data from rendering.
-      void Promise.allSettled([loadDashboardData(), loadSheltersData()]);
+      void Promise.allSettled([loadDashboardData(requestVersion), loadSheltersData(requestVersion)]);
     }
   }
 
@@ -188,7 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setInterval(updateTimestamp, 60000);
 
   // 3. Load Overview & Environmental Data
-  async function loadDashboardData() {
+  async function loadDashboardData(requestVersion = locationVersion) {
     const weatherUrl = `/weather?lat=${selectedLoc.lat}&lng=${selectedLoc.lng}`;
     const floodUrl = `/flood-risk?lat=${selectedLoc.lat}&lng=${selectedLoc.lng}`;
 
@@ -197,6 +199,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     try {
       const weatherRes = await weatherPromise;
+      if (requestVersion !== locationVersion) return;
       if (weatherRes.success && weatherRes.data) {
         document.getElementById('env-temp').textContent = `${weatherRes.data.temperature}°C`;
         document.getElementById('env-rain').textContent = `${weatherRes.data.rainfall} mm/h`;
@@ -211,6 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     try {
       const floodRes = await floodPromise;
+      if (requestVersion !== locationVersion) return;
       if (floodRes.success && floodRes.data) {
         const score = floodRes.data.score;
         const category = floodRes.data.category;
@@ -430,7 +434,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Move and fetch dashboard data immediately; geocoding should not
         // block weather, flood-risk, or shelter requests.
-        await updateLocation({ name: 'Selected map location', lat, lng });
+        await updateLocation({ name: 'Resolving place…', lat, lng });
 
         try {
           const location = await reverseGeocode(lat, lng);
@@ -752,9 +756,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   // 8. Load Shelters Data & Route Navigation
-  async function loadSheltersData() {
+  async function loadSheltersData(requestVersion = locationVersion) {
     try {
       const res = await ApiService.get(`/shelters?lat=${selectedLoc.lat}&lng=${selectedLoc.lng}&locationName=${encodeURIComponent(selectedLoc.name)}`);
+      if (requestVersion !== locationVersion) return;
       const sheltersList = document.getElementById('shelters-list');
 
       if (res.success && res.shelters) {
@@ -776,7 +781,7 @@ document.addEventListener('DOMContentLoaded', () => {
           // Shelter markers
           res.shelters.forEach(s => {
             L.marker([s.lat, s.lng]).addTo(window.sheltersLayerGroup)
-              .bindPopup(`<b>${s.name}</b><br>${s.address}<br>Distance: ${s.distanceKm} km (~${s.driveTimeMinutes} min)<br>Capacity: ${s.currentOccupancy}/${s.capacity}`);
+              .bindPopup(`<b>${s.name}</b><br>${s.address}<br>Distance: ${s.distanceKm} km (~${s.driveTimeMinutes} min)<br>${s.capacity ? `Capacity: ${s.currentOccupancy}/${s.capacity}` : 'Capacity: Not published'}${s.source ? `<br>Source: ${s.source}` : ''}`);
           });
         }
 
@@ -787,10 +792,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 <strong style="font-size: 1rem;">${s.name}</strong>
                 <span class="badge ${s.status === 'open' ? 'badge-live' : 'badge-high'}">${s.status.replace('_', ' ').toUpperCase()}</span>
               </div>
-              <p class="subtext" style="font-size: 0.82rem; margin-bottom: 0.5rem;">${s.distanceKm} km away · ~${s.driveTimeMinutes} min drive · Capacity: ${s.currentOccupancy}/${s.capacity}</p>
+              <p class="subtext" style="font-size: 0.82rem; margin-bottom: 0.5rem;">${s.distanceKm} km away · ~${s.driveTimeMinutes} min drive · Capacity: ${s.capacity ? `${s.currentOccupancy}/${s.capacity}` : 'Not published'}${s.source ? ` · ${s.source}` : ''}</p>
 
               <div class="progress-bar-bg" style="margin-bottom: 0.75rem;">
-                <div class="progress-bar-fill" style="width: ${Math.round((s.currentOccupancy / s.capacity) * 100)}%; background: ${s.currentOccupancy > s.capacity * 0.85 ? 'var(--accent-red)' : 'var(--accent-green-dark)'};"></div>
+                <div class="progress-bar-fill" style="width: ${s.capacity ? Math.min(100, Math.round((s.currentOccupancy / s.capacity) * 100)) : 0}%; background: ${s.capacity && s.currentOccupancy > s.capacity * 0.85 ? 'var(--accent-red)' : 'var(--accent-green-dark)'};"></div>
               </div>
 
               <div>${(s.amenities || ['Food', 'Water', 'Beds']).map(a => `<span class="tag-pill">${a}</span>`).join('')}</div>
@@ -858,7 +863,7 @@ document.addEventListener('DOMContentLoaded', () => {
           async (pos) => {
             const lat = pos.coords.latitude;
             const lng = pos.coords.longitude;
-            await updateLocation({ name: 'Current GPS Location', lat, lng });
+            await updateLocation({ name: 'Resolving place…', lat, lng });
             try {
               const location = await reverseGeocode(lat, lng);
               await updateLocation(location, false);
