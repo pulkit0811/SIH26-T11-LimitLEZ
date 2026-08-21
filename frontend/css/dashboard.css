@@ -84,19 +84,6 @@
   transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
-.sos-btn {
-  transition: transform 0.2s ease, box-shadow 0.2s ease !important;
-}
-
-.sos-btn.activating {
-  animation: pulse-sos 0.4s infinite alternate !important;
-}
-
-@keyframes pulse-sos {
-  from { transform: scale(1); box-shadow: 0 0 0 0 rgba(224, 90, 78, 0.6); }
-  to { transform: scale(1.05); box-shadow: 0 0 0 16px rgba(224, 90, 78, 0); }
-}
-
 
 /* Contact Card & Shelter Card Row */
 .contact-item-row {
@@ -144,8 +131,9 @@
   width: 180px;
   height: 180px;
   border-radius: 50%;
-  background: #fff;
-  border: 3px solid var(--accent-red-light);
+  color: rgb(186, 11, 11);
+  background: #f9f8f8;
+  border: 3px solid rgba(213, 74, 62, 0.43);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -153,8 +141,8 @@
   gap: 0.25rem;
   cursor: pointer;
   position: relative;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 0 0 12px rgba(224, 90, 78, 0.06), 0 0 0 24px rgba(224, 90, 78, 0.03);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+  box-shadow: 0 0 0 12px rgba(224, 90, 78, 0.16), 0 0 0 24px rgba(224, 90, 78, 0.17);
 }
 
 .sos-btn:hover {
@@ -165,6 +153,12 @@
 .sos-btn.activating {
   animation: sos-pulse 0.5s ease infinite;
   border-color: var(--accent-red);
+  background: rgba(209, 27, 10, 0.827);
+  color: white;
+}
+
+.sos-btn.activating span {
+  color: white !important;
 }
 
 @keyframes sos-pulse {
