@@ -14,16 +14,19 @@
       rel="stylesheet"
     />
 
-    <!-- Leaflet CSS & JS for Real Interactive Maps -->
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  </head>
-  <body>
-    <!-- Toast Container -->
-    <div id="toast-container" class="toast-container"></div>
+    <button id="hamburger-btn" class="nav-hamburger" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+
+    <nav class="nav-tabs" id="desktop-nav">
+      <a href="#overview" class="nav-tab active" data-tab="overview">Overview</a>
+      <a href="#map" class="nav-tab" data-tab="map">Map</a>
+      <a href="#alerts" class="nav-tab" data-tab="alerts">Alerts <span id="nav-alerts-badge" class="badge badge-critical" style="padding: 2px 6px; font-size: 0.7rem; display: none;"></span></a>
+      <a href="#emergency" class="nav-tab" data-tab="emergency">Emergency</a>
+      <a href="#safety" class="nav-tab" data-tab="safety">Safety</a>
+      <a href="#shelters" class="nav-tab" data-tab="shelters">Shelters</a>
+      <a href="#helpline" class="nav-tab" data-tab="helpline">Helpline 📞</a>
+    </nav>
 
     <!-- Top Navigation -->
     <header class="header-nav">
@@ -801,54 +804,11 @@
       >
     </nav>
 
-    <!-- Mobile Bottom Tab Navigation Bar (For Native Mobile App Feel & Live Demonstration) -->
-    <nav id="mobile-bottom-bar" class="mobile-bottom-bar">
-      <a
-        href="#overview"
-        class="bottom-nav-item active nav-tab"
-        data-tab="overview"
-      >
-        <span class="nav-icon">📊</span>
-        <span class="nav-label">Overview</span>
-      </a>
-      <a href="#map" class="bottom-nav-item nav-tab" data-tab="map">
-        <span class="nav-icon">🗺️</span>
-        <span class="nav-label">Map</span>
-      </a>
-      <a href="#alerts" class="bottom-nav-item nav-tab" data-tab="alerts">
-        <span class="nav-icon">🔔</span>
-        <span class="nav-label">Alerts</span>
-      </a>
-      <a href="#emergency" class="bottom-nav-item nav-tab" data-tab="emergency">
-        <span class="nav-icon">🚨</span>
-        <span class="nav-label">SOS</span>
-      </a>
-      <a href="#shelters" class="bottom-nav-item nav-tab" data-tab="shelters">
-        <span class="nav-icon">🏠</span>
-        <span class="nav-label">Shelters</span>
-      </a>
-    </nav>
-
-    <!-- MODALS -->
-
-    <!-- 1. Location Selection Modal -->
-    <div id="location-modal" class="modal-backdrop">
-      <div class="modal-content">
-        <div
-          style="
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-          "
-        >
-          <h3 class="heading-md">Select Monitoring Location</h3>
-          <button
-            id="close-location-modal"
-            style="font-size: 1.5rem; cursor: pointer; color: var(--text-muted)"
-          >
-            &times;
-          </button>
+    <!-- 6. SHELTERS TAB -->
+    <section id="tab-shelters" class="tab-panel">
+      <div class="dashboard-layout shelters-layout-grid">
+        <div class="dashboard-main shelter-map-container" style="padding: 0;">
+          <div id="shelters-leaflet-map" style="width: 100%; height: 100%; min-height: calc(100vh - 64px);"></div>
         </div>
 
         <div class="form-group" style="position: relative">
@@ -875,6 +835,292 @@
             "
           ></div>
         </div>
+      </div>
+    </section>
+
+    <!-- 7. HELPLINE TAB -->
+    <section id="tab-helpline" class="tab-panel">
+      <div style="max-width: 1080px; margin: 2rem auto; padding: 0 1.25rem;">
+        <div style="margin-bottom: 2rem;">
+          <p class="label-caps" style="color: var(--accent-orange-hover);">DIRECT DISASTER & EMERGENCY HOTLINES</p>
+          <h2 class="heading-lg" style="margin-top: 0.25rem;">Government & Security Authorities Helpline</h2>
+          <p class="subtext" style="margin-top: 0.25rem;">
+            Official 24/7 emergency response numbers for flood rescue, medical evacuations, disaster relief, and security. Click any card button to instantly copy the number to your clipboard.
+          </p>
+        </div>
+
+        <div class="helpline-grid">
+          <!-- Card 1: NDRF -->
+          <div class="card helpline-card">
+            <div class="helpline-card-header">
+              <div class="helpline-icon">🚁</div>
+              <div>
+                <span class="badge badge-high" style="margin-bottom: 0.25rem;">Disaster Rescue</span>
+                <h3 style="font-size: 1.1rem; font-weight: 700;">National Disaster Response Force (NDRF)</h3>
+              </div>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0.75rem 0;">
+              Dedicated flood rescue operations, evacuation, and swift water disaster response teams across India.
+            </p>
+            <div class="helpline-number-box">
+              <span class="helpline-number">011-24363260</span>
+              <span class="subtext" style="font-size: 0.75rem; margin-left: auto;">24/7 Control Room</span>
+            </div>
+            <div class="helpline-btn-group">
+              <button class="btn btn-secondary btn-sm btn-copy-helpline" data-number="01124363260">
+                📋 Copy Number
+              </button>
+              <a href="tel:01124363260" class="btn btn-primary btn-sm">
+                📞 Call Now
+              </a>
+            </div>
+          </div>
+
+          <!-- Card 2: National Emergency 112 -->
+          <div class="card helpline-card" style="border-left: 4px solid var(--accent-red);">
+            <div class="helpline-card-header">
+              <div class="helpline-icon" style="background: #FFEBE9;">🚨</div>
+              <div>
+                <span class="badge badge-critical" style="margin-bottom: 0.25rem;">National Toll-Free</span>
+                <h3 style="font-size: 1.1rem; font-weight: 700;">National Emergency Number</h3>
+              </div>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0.75rem 0;">
+              Single unified emergency response number for Police, Fire, Ambulance & Disaster Services nationwide.
+            </p>
+            <div class="helpline-number-box">
+              <span class="helpline-number" style="color: var(--accent-red); font-size: 1.5rem;">112</span>
+              <span class="subtext" style="font-size: 0.75rem; margin-left: auto;">Toll-Free · 24x7</span>
+            </div>
+            <div class="helpline-btn-group">
+              <button class="btn btn-secondary btn-sm btn-copy-helpline" data-number="112">
+                📋 Copy Number
+              </button>
+              <a href="tel:112" class="btn btn-danger btn-sm">
+                🚨 Call 112
+              </a>
+            </div>
+          </div>
+
+          <!-- Card 3: SDMA -->
+          <div class="card helpline-card">
+            <div class="helpline-card-header">
+              <div class="helpline-icon">🏛️</div>
+              <div>
+                <span class="badge badge-live" style="margin-bottom: 0.25rem;">State Govt Authority</span>
+                <h3 style="font-size: 1.1rem; font-weight: 700;">State Disaster Management (SDMA)</h3>
+              </div>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0.75rem 0;">
+              State emergency operation center for regional flood warnings, relief camps, and emergency supplies dispatch.
+            </p>
+            <div class="helpline-number-box">
+              <span class="helpline-number">1078</span>
+              <span class="subtext" style="font-size: 0.75rem; margin-left: auto;">State Control Room</span>
+            </div>
+            <div class="helpline-btn-group">
+              <button class="btn btn-secondary btn-sm btn-copy-helpline" data-number="1078">
+                📋 Copy Number
+              </button>
+              <a href="tel:1078" class="btn btn-primary btn-sm">
+                📞 Call Now
+              </a>
+            </div>
+          </div>
+
+          <!-- Card 4: Flood Control Room -->
+          <div class="card helpline-card">
+            <div class="helpline-card-header">
+              <div class="helpline-icon">🌊</div>
+              <div>
+                <span class="badge badge-high" style="margin-bottom: 0.25rem;">Flood Advisory</span>
+                <h3 style="font-size: 1.1rem; font-weight: 700;">District Flood Control Helpline</h3>
+              </div>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0.75rem 0;">
+              Real-time river level updates, embankment breach reporting, and local community evacuation assistance.
+            </p>
+            <div class="helpline-number-box">
+              <span class="helpline-number">1070</span>
+              <span class="subtext" style="font-size: 0.75rem; margin-left: auto;">Toll-Free Control Room</span>
+            </div>
+            <div class="helpline-btn-group">
+              <button class="btn btn-secondary btn-sm btn-copy-helpline" data-number="1070">
+                📋 Copy Number
+              </button>
+              <a href="tel:1070" class="btn btn-primary btn-sm">
+                📞 Call Now
+              </a>
+            </div>
+          </div>
+
+          <!-- Card 5: Medical Ambulance -->
+          <div class="card helpline-card">
+            <div class="helpline-card-header">
+              <div class="helpline-icon" style="background: #E8F5E9;">🚑</div>
+              <div>
+                <span class="badge badge-live" style="margin-bottom: 0.25rem;">Medical Emergency</span>
+                <h3 style="font-size: 1.1rem; font-weight: 700;">National Health & Ambulance Service</h3>
+              </div>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0.75rem 0;">
+              Emergency medical transport, trauma care, and boat-ambulance dispatch in flooded submergence zones.
+            </p>
+            <div class="helpline-number-box">
+              <span class="helpline-number">108</span>
+              <span class="subtext" style="font-size: 0.75rem; margin-left: auto;">24/7 Ambulance</span>
+            </div>
+            <div class="helpline-btn-group">
+              <button class="btn btn-secondary btn-sm btn-copy-helpline" data-number="108">
+                📋 Copy Number
+              </button>
+              <a href="tel:108" class="btn btn-primary btn-sm">
+                📞 Call 108
+              </a>
+            </div>
+          </div>
+
+          <!-- Card 6: Police Assistance -->
+          <div class="card helpline-card">
+            <div class="helpline-card-header">
+              <div class="helpline-icon" style="background: #EBF3FE;">🛡️</div>
+              <div>
+                <span class="badge badge-live" style="margin-bottom: 0.25rem;">Security & Law</span>
+                <h3 style="font-size: 1.1rem; font-weight: 700;">Police & Security Helpline</h3>
+              </div>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0.75rem 0;">
+              Immediate security deployment, law enforcement during evacuations, and missing person search assistance.
+            </p>
+            <div class="helpline-number-box">
+              <span class="helpline-number">100</span>
+              <span class="subtext" style="font-size: 0.75rem; margin-left: auto;">Police Control</span>
+            </div>
+            <div class="helpline-btn-group">
+              <button class="btn btn-secondary btn-sm btn-copy-helpline" data-number="100">
+                📋 Copy Number
+              </button>
+              <a href="tel:100" class="btn btn-primary btn-sm">
+                📞 Call 100
+              </a>
+            </div>
+          </div>
+
+          <!-- Card 7: Fire & Rescue -->
+          <div class="card helpline-card">
+            <div class="helpline-card-header">
+              <div class="helpline-icon" style="background: #FFF3E0;">🚒</div>
+              <div>
+                <span class="badge badge-high" style="margin-bottom: 0.25rem;">Rescue Ops</span>
+                <h3 style="font-size: 1.1rem; font-weight: 700;">Fire & Disaster Rescue Services</h3>
+              </div>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0.75rem 0;">
+              Heavy rescue gear, building collapse response, and water pumping assistance during heavy inundation.
+            </p>
+            <div class="helpline-number-box">
+              <span class="helpline-number">101</span>
+              <span class="subtext" style="font-size: 0.75rem; margin-left: auto;">Fire Station Desk</span>
+            </div>
+            <div class="helpline-btn-group">
+              <button class="btn btn-secondary btn-sm btn-copy-helpline" data-number="101">
+                📋 Copy Number
+              </button>
+              <a href="tel:101" class="btn btn-primary btn-sm">
+                📞 Call 101
+              </a>
+            </div>
+          </div>
+
+          <!-- Card 8: Red Cross Relief -->
+          <div class="card helpline-card">
+            <div class="helpline-card-header">
+              <div class="helpline-icon" style="background: #FFEBEE;">❤️</div>
+              <div>
+                <span class="badge badge-live" style="margin-bottom: 0.25rem;">Humanitarian Aid</span>
+                <h3 style="font-size: 1.1rem; font-weight: 700;">Indian Red Cross Disaster Relief</h3>
+              </div>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0.75rem 0;">
+              Emergency medical kits, clean drinking water distribution, food ration packs, and temporary shelter kits.
+            </p>
+            <div class="helpline-number-box">
+              <span class="helpline-number">011-23716441</span>
+              <span class="subtext" style="font-size: 0.75rem; margin-left: auto;">Relief Headquarters</span>
+            </div>
+            <div class="helpline-btn-group">
+              <button class="btn btn-secondary btn-sm btn-copy-helpline" data-number="01123716441">
+                📋 Copy Number
+              </button>
+              <a href="tel:01123716441" class="btn btn-primary btn-sm">
+                📞 Call Now
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Mobile Nav Overlay & Menu -->
+  <div id="mobile-nav-overlay" class="mobile-nav-overlay"></div>
+  <nav id="mobile-nav-menu" class="mobile-nav-menu">
+    <a href="#overview" class="nav-tab active" data-tab="overview">📊 Overview</a>
+    <a href="#map" class="nav-tab" data-tab="map">🗺️ Map</a>
+    <a href="#alerts" class="nav-tab" data-tab="alerts">🔔 Alerts <span id="mobile-nav-alerts-badge" class="badge badge-critical" style="padding: 2px 6px; font-size: 0.7rem; display: none;"></span></a>
+
+    <a href="#emergency" class="nav-tab" data-tab="emergency">🚨 Emergency</a>
+    <a href="#safety" class="nav-tab" data-tab="safety">🛡️ Safety</a>
+    <a href="#shelters" class="nav-tab" data-tab="shelters">🏠 Shelters</a>
+    <a href="#helpline" class="nav-tab" data-tab="helpline">📞 Helpline</a>
+    <hr style="border: none; border-top: 1px solid var(--border); margin: 0.5rem 0;">
+    <a href="profile.html" style="padding: 0.75rem 1rem; font-size: 1rem; font-weight: 500;">👤 Profile</a>
+  </nav>
+
+  <!-- Mobile Bottom Tab Navigation Bar (For Native Mobile App Feel & Live Demonstration) -->
+  <nav id="mobile-bottom-bar" class="mobile-bottom-bar">
+    <a href="#overview" class="bottom-nav-item active nav-tab" data-tab="overview">
+      <span class="nav-icon">📊</span>
+      <span class="nav-label">Overview</span>
+    </a>
+    <a href="#map" class="bottom-nav-item nav-tab" data-tab="map">
+      <span class="nav-icon">🗺️</span>
+      <span class="nav-label">Map</span>
+    </a>
+    <a href="#alerts" class="bottom-nav-item nav-tab" data-tab="alerts">
+      <span class="nav-icon">🔔</span>
+      <span class="nav-label">Alerts</span>
+    </a>
+    <a href="#emergency" class="bottom-nav-item nav-tab" data-tab="emergency">
+      <span class="nav-icon">🚨</span>
+      <span class="nav-label">SOS</span>
+    </a>
+    <a href="#shelters" class="bottom-nav-item nav-tab" data-tab="shelters">
+      <span class="nav-icon">🏠</span>
+      <span class="nav-label">Shelters</span>
+    </a>
+    <a href="#helpline" class="bottom-nav-item nav-tab" data-tab="helpline">
+      <span class="nav-icon">📞</span>
+      <span class="nav-label">Helpline</span>
+    </a>
+  </nav>
+
+  <!-- MODALS -->
+
+
+  <!-- 1. Location Selection Modal -->
+  <div id="location-modal" class="modal-backdrop">
+    <div class="modal-content">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h3 class="heading-md">Select Monitoring Location</h3>
+        <button id="close-location-modal" style="font-size: 1.5rem; cursor: pointer; color: var(--text-muted);">&times;</button>
+      </div>
+      
+      <div class="form-group" style="position: relative;">
+        <input type="text" id="modal-search-input" class="form-input" placeholder="Search city, area or pincode (e.g. Hazratganj)...">
+        <div id="modal-search-results" class="card" style="display: none; position: absolute; top: 100%; left: 0; right: 0; z-index: 10; margin-top: 4px; padding: 0.5rem 0; max-height: 200px; overflow-y: auto;"></div>
+      </div>
 
         <button
           id="modal-gps-btn"

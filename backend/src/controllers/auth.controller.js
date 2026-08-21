@@ -16,11 +16,14 @@ exports.inMemoryOtps = inMemoryOtps;
 // Signup - Step 1: Create Account & Send OTP
 exports.signup = async (req, res) => {
   try {
-    const { name, email, phone, password } = req.body;
+    let { name, email, phone, password } = req.body;
 
     if (!name || !email || !phone || !password) {
       return res.status(400).json({ success: false, message: 'All fields are required' });
     }
+
+    email = email.toLowerCase().trim();
+    phone = phone.trim();
 
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
@@ -35,7 +38,7 @@ exports.signup = async (req, res) => {
         return res.status(400).json({ success: false, message: 'Email is already registered' });
       }
 
-      const newUser = new User({ name, email, phone, passwordHash });
+      const newUser = new User({ name: name.trim(), email, phone, passwordHash });
       await newUser.save();
       await OtpVerification.create({ phone, otpHash });
     } else {
@@ -45,7 +48,7 @@ exports.signup = async (req, res) => {
         return res.status(400).json({ success: false, message: 'Email is already registered' });
       }
       const fakeId = 'user_' + Date.now();
-      inMemoryUsers.push({ _id: fakeId, id: fakeId, name, email, phone, passwordHash, isPhoneVerified: false });
+      inMemoryUsers.push({ _id: fakeId, id: fakeId, name: name.trim(), email, phone, passwordHash, isPhoneVerified: false });
       inMemoryOtps.push({ phone, otpHash, createdAt: new Date() });
     }
 
@@ -67,11 +70,14 @@ exports.signup = async (req, res) => {
 // Verify OTP - Step 2
 exports.verifyOtp = async (req, res) => {
   try {
-    const { phone, otp } = req.body;
+    let { phone, otp } = req.body;
 
     if (!phone || !otp) {
       return res.status(400).json({ success: false, message: 'Phone and OTP are required' });
     }
+
+    phone = phone.trim();
+    otp = otp.trim();
 
     const isDbConnected = mongoose.connection.readyState === 1;
     let user;
@@ -131,11 +137,13 @@ exports.verifyOtp = async (req, res) => {
 // Login
 exports.login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    let { email, password } = req.body;
 
     if (!email || !password) {
       return res.status(400).json({ success: false, message: 'Email and password are required' });
     }
+
+    email = email.toLowerCase().trim();
 
     const isDbConnected = mongoose.connection.readyState === 1;
     let user;
@@ -146,7 +154,7 @@ exports.login = async (req, res) => {
       user = inMemoryUsers.find(u => u.email === email);
     }
 
-    if (!user) {
+    if (!user || !user.passwordHash) {
       return res.status(401).json({ success: false, message: 'Invalid credentials' });
     }
 

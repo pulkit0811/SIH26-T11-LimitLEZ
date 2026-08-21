@@ -1017,6 +1017,30 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Helpline Copy to Clipboard Handler
+  document.addEventListener('click', (e) => {
+    const copyBtn = e.target.closest('.btn-copy-helpline');
+    if (copyBtn) {
+      const num = copyBtn.dataset.number;
+      if (num) {
+        navigator.clipboard.writeText(num).then(() => {
+          const originalText = copyBtn.textContent;
+          copyBtn.textContent = '✅ Copied!';
+          copyBtn.classList.add('btn-primary');
+          copyBtn.classList.remove('btn-secondary');
+          showToast(`Copied number ${num} to clipboard`);
+          setTimeout(() => {
+            copyBtn.textContent = originalText;
+            copyBtn.classList.remove('btn-primary');
+            copyBtn.classList.add('btn-secondary');
+          }, 2000);
+        }).catch(() => {
+          showToast(`Helpline number: ${num}`);
+        });
+      }
+    }
+  });
+
   // Initial Boot Sequence
   initMaps();
   updateLocation(selectedLoc, true);

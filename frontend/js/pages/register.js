@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const response = await AuthService.signup(name, email, phone, password);
       if (response.success) {
-        sessionStorage.setItem('temp_verify_phone', phone);
+        sessionStorage.setItem('temp_verify_phone', response.phone || phone);
         if (response.devOtp) {
           sessionStorage.setItem('temp_dev_otp', response.devOtp);
         }
