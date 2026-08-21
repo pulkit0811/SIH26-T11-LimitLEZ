@@ -85,12 +85,12 @@
               </div>
             </div>
 
-            <p style="color: var(--accent-orange); font-size: 0.85rem; font-weight: 600;" id="risk-trend-label">↗ Calculating via Open-Meteo live telemetry...</p>
+            <p style="color: var(--accent-orange); font-size: 0.85rem; font-weight: 600;" id="risk-trend-label">↗ Updating from live weather data...</p>
           </div>
 
           <!-- Contributing Conditions -->
           <div style="margin-bottom: 2rem;">
-            <p class="label-caps" style="margin-bottom: 1rem;">CONTRIBUTING CONDITIONS</p>
+            <p class="label-caps" style="margin-bottom: 1rem;">WHAT'S CAUSING THIS RISK</p>
             
             <div class="condition-row">
               <span class="condition-label">Rainfall</span>
@@ -100,14 +100,14 @@
             </div>
 
             <div class="condition-row">
-              <span class="condition-label">Soil saturation</span>
+              <span class="condition-label">Ground moisture</span>
               <span class="condition-val" id="val-soil">--%</span>
               <div class="progress-bar-bg"><div class="progress-bar-fill" id="bar-soil" style="width: 0%;"></div></div>
               <span class="condition-pct" id="pct-soil">--%</span>
             </div>
 
             <div class="condition-row">
-              <span class="condition-label">Water proximity</span>
+              <span class="condition-label">Distance to water</span>
               <span class="condition-val" id="val-prox">-- km</span>
               <div class="progress-bar-bg"><div class="progress-bar-fill" id="bar-prox" style="width: 0%;"></div></div>
               <span class="condition-pct" id="pct-prox">--%</span>
@@ -127,7 +127,7 @@
 
           <!-- Environmental Conditions Weather Chart -->
           <div class="card">
-            <p class="label-caps" style="margin-bottom: 1rem;">ENVIRONMENTAL CONDITIONS (OPEN-METEO LIVE)</p>
+            <p class="label-caps" style="margin-bottom: 1rem;">CURRENT WEATHER</p>
             <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
               <div><span class="subtext">TEMPERATURE</span><h3 id="env-temp">--°C</h3></div>
               <div><span class="subtext">RAINFALL</span><h3 id="env-rain">-- mm/h</h3></div>
@@ -144,7 +144,7 @@
           <!-- Flash Flood Warning Box -->
           <div class="card" style="border-left: 4px solid var(--accent-orange); margin-bottom: 1.5rem; background: #FFF9F5;">
             <p class="label-caps" style="color: var(--accent-orange-hover);">FLASH FLOOD WARNING</p>
-            <p style="font-size: 0.9rem; font-weight: 600; margin: 0.5rem 0;" id="warning-box-body">High flood probability detected within 4.2 km. Rainfall expected to intensify.</p>
+            <p style="font-size: 0.9rem; font-weight: 600; margin: 0.5rem 0;" id="warning-box-body">High flood chance within 4.2 km. Rain is expected to get heavier.</p>
             <a href="#map" class="nav-tab" data-tab="map" style="color: var(--accent-orange-hover); font-size: 0.85rem; font-weight: 600;">View on map →</a>
           </div>
 
@@ -203,7 +203,7 @@
         <div id="alerts-empty-state" class="card" style="text-align: center; padding: 3rem 1.5rem; display: none;">
           <div style="font-size: 3rem; margin-bottom: 1rem;">🛡️</div>
           <h3 class="heading-md" style="margin-bottom: 0.5rem;">No active alerts</h3>
-          <p class="subtext">All flood monitoring systems report normal conditions for your area.</p>
+          <p class="subtext">Everything looks safe in your area right now.</p>
         </div>
 
         <div id="alerts-list"></div>
@@ -229,46 +229,46 @@
           <div class="card" style="width: 100%; max-width: 580px; margin-top: 2rem; text-align: left; border: 1px solid var(--border);">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
               <div>
-                <span class="label-caps" style="color: var(--accent-orange-hover);">OFFLINE P2P MESH NETWORK</span>
-                <h3 class="heading-md" style="font-size: 1.1rem; margin-top: 0.2rem;">📡 Nearby Emergency Mesh (Range: 300m – 400m)</h3>
+                <span class="label-caps" style="color: var(--accent-orange-hover);">NO MOBILE NETWORK? YOU CAN STILL CONNECT</span>
+                <h3 class="heading-md" style="font-size: 1.1rem; margin-top: 0.2rem;">People Near You (within 300–400m)</h3>
               </div>
               <span class="badge badge-live"><span class="badge-dot"></span> Active</span>
             </div>
 
             <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.25rem; line-height: 1.5;">
-              Connects directly with nearby flood survivors and relay nodes within 300m–400m range via BLE & Wi-Fi Direct radio — works even during cellular network outages.
+              🆘 Stay connected even when there is no mobile network. Your phone can connect with people nearby and send emergency messages.
             </p>
 
             <!-- Active Peers Container -->
             <div id="mesh-peers-container" style="display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1.25rem;">
               <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-card-muted); padding: 0.75rem 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border);">
                 <div style="display: flex; align-items: center; gap: 0.75rem;">
-                  <span style="font-size: 1.2rem;">📱</span>
+                  <span style="font-size: 1.2rem;">👤</span>
                   <div>
-                    <strong style="font-size: 0.88rem;">Peer Node #LF-942</strong>
-                    <p class="subtext" style="font-size: 0.76rem;">120m away · Signal 94% · Status: Safe</p>
+                    <strong style="font-size: 0.88rem;">Person Nearby #942</strong>
+                    <p class="subtext" style="font-size: 0.76rem;">120m away · Safe</p>
                   </div>
                 </div>
-                <button class="btn btn-secondary btn-sm btn-mesh-ping" data-peer="LF-942">Ping Peer</button>
+                <button class="btn btn-secondary btn-sm btn-mesh-ping" data-peer="LF-942">Connect</button>
               </div>
 
               <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-card-muted); padding: 0.75rem 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border);">
                 <div style="display: flex; align-items: center; gap: 0.75rem;">
                   <span style="font-size: 1.2rem;">🚨</span>
                   <div>
-                    <strong style="font-size: 0.88rem; color: var(--accent-red);">Peer Node #LF-318 (Water Rising)</strong>
-                    <p class="subtext" style="font-size: 0.76rem;">280m away · Signal 78% · Status: Needs Check-in</p>
+                    <strong style="font-size: 0.88rem; color: var(--accent-red);">Person Needs Help #318</strong>
+                    <p class="subtext" style="font-size: 0.76rem;">280m away · Contact immediately</p>
                   </div>
                 </div>
-                <button class="btn btn-primary btn-sm btn-mesh-ping" data-peer="LF-318">Ping Peer</button>
+                <button class="btn btn-primary btn-sm btn-mesh-ping" data-peer="LF-318">Connect</button>
               </div>
 
               <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-card-muted); padding: 0.75rem 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border);">
                 <div style="display: flex; align-items: center; gap: 0.75rem;">
                   <span style="font-size: 1.2rem;">📡</span>
                   <div>
-                    <strong style="font-size: 0.88rem;">Emergency Relay Node #3</strong>
-                    <p class="subtext" style="font-size: 0.76rem;">380m away · Signal 58% · Active Mesh Relay</p>
+                    <strong style="font-size: 0.88rem;">Signal Relay Point #3</strong>
+                    <p class="subtext" style="font-size: 0.76rem;">380m away · Helping connect people</p>
                   </div>
                 </div>
                 <span class="badge badge-live" style="font-size: 0.7rem;">Relay</span>
@@ -276,8 +276,8 @@
             </div>
 
             <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-              <button id="btn-broadcast-beacon" class="btn btn-primary btn-sm" style="flex: 1;">📡 Broadcast Distress Beacon (300m)</button>
-              <button id="btn-scan-mesh" class="btn btn-secondary btn-sm">⚡ Scan Nearby (300-400m)</button>
+              <button id="btn-broadcast-beacon" class="btn btn-primary btn-sm" style="flex: 1;">📡 Send Help Signal (300m)</button>
+              <button id="btn-scan-mesh" class="btn btn-secondary btn-sm">⚡ Find People Nearby</button>
             </div>
           </div>
         </div>
@@ -318,7 +318,7 @@
         </div>
         <div class="dashboard-sidebar">
           <h3 class="heading-md">Nearby safe shelters</h3>
-          <p class="subtext" style="margin-bottom: 1.5rem;">Sorted by real proximity · Live capacity</p>
+          <p class="subtext" style="margin-bottom: 1.5rem;">Nearest first · Shows available space</p>
           <div id="shelters-list"></div>
         </div>
       </div>
@@ -328,10 +328,10 @@
     <section id="tab-helpline" class="tab-panel">
       <div style="max-width: 1080px; margin: 2rem auto; padding: 0 1.25rem;">
         <div style="margin-bottom: 2rem;">
-          <p class="label-caps" style="color: var(--accent-orange-hover);">DIRECT DISASTER & EMERGENCY HOTLINES</p>
-          <h2 class="heading-lg" style="margin-top: 0.25rem;">Government & Security Authorities Helpline</h2>
+          <p class="label-caps" style="color: var(--accent-orange-hover);">EMERGENCY PHONE NUMBERS</p>
+          <h2 class="heading-lg" style="margin-top: 0.25rem;">Government Emergency Helplines</h2>
           <p class="subtext" style="margin-top: 0.25rem;">
-            Official 24/7 emergency response numbers for flood rescue, medical evacuations, disaster relief, and security. Click any card button to instantly copy the number to your clipboard.
+            Official 24/7 numbers for flood rescue, medical help, disaster relief, and police. Click any button to copy the number.
           </p>
         </div>
 
@@ -662,11 +662,11 @@
       <div style="font-size: 3rem; margin-bottom: 0.5rem;">🚨</div>
       <h3 class="heading-md" style="margin-bottom: 0.5rem; color: var(--accent-red);">CONFIRM EMERGENCY SOS</h3>
       <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.5;">
-        You are about to dispatch an emergency distress signal with your live GPS location (<strong id="sos-modal-location">Lucknow</strong>) to all registered emergency contacts.
+        You are about to send an emergency alert with your live location (<strong id="sos-modal-location">Lucknow</strong>) to all registered emergency contacts.
       </p>
 
       <div style="background: #FFF9F5; border: 1px dashed var(--accent-red); border-radius: var(--radius-sm); padding: 0.75rem; margin-bottom: 1.5rem; font-size: 0.82rem; color: var(--text-secondary);">
-        ⚡ Automated SMS and push notifications will be sent immediately.
+        ⚡ Text messages and app alerts will be sent right away.
       </div>
 
       <div style="display: flex; gap: 0.75rem;">
