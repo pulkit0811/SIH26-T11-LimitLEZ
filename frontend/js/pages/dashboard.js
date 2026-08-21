@@ -1059,7 +1059,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const locText = document.getElementById('sos-modal-location');
       if (locText) locText.textContent = selectedLoc.name;
       if (sosModal) sosModal.classList.add('active');
-    }, 2000);
+    }, 1200);
   }
 
   function cancelSOS() {
