@@ -144,9 +144,8 @@
   width: 180px;
   height: 180px;
   border-radius: 50%;
-  color: rgb(186, 11, 11);
-  background: #f9f8f8;
-  border: 3px solid rgb(213 74 62 / 43%);
+  background: #fff;
+  border: 3px solid var(--accent-red-light);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -155,7 +154,7 @@
   cursor: pointer;
   position: relative;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 0 0 12px rgb(224 90 78 / 16%), 0 0 0 24px rgb(224 90 78 / 17%);
+  box-shadow: 0 0 0 12px rgba(224, 90, 78, 0.06), 0 0 0 24px rgba(224, 90, 78, 0.03);
 }
 
 .sos-btn:hover {
@@ -166,8 +165,6 @@
 .sos-btn.activating {
   animation: sos-pulse 0.5s ease infinite;
   border-color: var(--accent-red);
-  background: rgba(209, 27, 10, 0.827);
-  color: white;
 }
 
 @keyframes sos-pulse {
