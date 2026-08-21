@@ -4,6 +4,32 @@
 
 ---
 
+## 🛠️ Full Technology Stack
+
+### 🎨 Frontend
+- **Languages**: HTML5 (Semantic markup), CSS3 (Custom design tokens & responsive layouts), Vanilla JavaScript (ES6+ modular SPA architecture)
+- **Design & Styling**: Vanilla CSS with Design System Tokens, Dark mode / Glassmorphism UI, 3D interactive tilt cards, fluid typography (`clamp()`), micro-animations
+- **Interactive Maps**: [Leaflet.js v1.9.4](https://leafletjs.com/) with OpenStreetMap vector tiles & spatial perimeter rendering
+- **Data Visualization**: Custom HTML5 2D Canvas rendering for live precipitation trend graphs
+- **Browser APIs**: Web Geolocation API, Clipboard API, Fetch API, SessionStorage / LocalStorage API
+
+### ⚙️ Backend & Database
+- **Runtime Environment**: [Node.js](https://nodejs.org/)
+- **Web Framework**: [Express.js](https://expressjs.com/) (RESTful HTTP Routing, middleware pipeline, static web server)
+- **Database & Data Modeling**: [MongoDB](https://www.mongodb.com/) & [Mongoose ODM](https://mongoosejs.com/) (with automatic fallback to In-Memory storage if MongoDB is offline)
+- **Authentication & Security**: JSON Web Tokens ([JWT](https://jwt.io/)) for session authorization, [bcryptjs](https://github.com/dcodeIO/bcrypt.js) for password hashing
+- **Middleware & Utility**: `cors` (Cross-Origin Resource Sharing), `dotenv` (Environment variable configuration)
+
+### 📡 Live Data Sources & Third-Party APIs
+- **[Open-Meteo Weather API](https://open-meteo.com/)**: Live meteorological telemetry (precipitation intensity, 24h accumulated rainfall, surface temperature, wind speed, 0–1cm topsoil moisture).
+- **[OpenStreetMap Nominatim API](https://nominatim.openstreetmap.org/)**: Forward and reverse geocoding engine for location lookup across India.
+
+### 🚨 Emergency & Spatial Engines
+- **P2P Mesh Network Protocol**: Simulated short-range (300m–400m) BLE / Wi-Fi Direct peer discovery, signal relay nodes, and distress beacon broadcasts for offline operation.
+- **Spatial Distance Engine**: Haversine formula calculation for hyper-local shelter distance ranking and travel time estimates.
+
+---
+
 ## 📁 Full Project Folder Structure
 
 ```text

@@ -567,135 +567,174 @@ document.addEventListener('DOMContentLoaded', () => {
   let allContacts = [];
 
   async function loadContactsData() {
+    let contacts = [];
+
+    // 1. Fetch from API if authenticated/online
     try {
       const res = await ApiService.get('/contacts');
-      if (res.success && res.contacts) {
-        allContacts = res.contacts;
-        const emergencyList = document.getElementById('emergency-contacts-list');
-        const sidebarList = document.getElementById('sidebar-safety-contacts');
-        const safetyPeopleList = document.getElementById('safety-people-list');
-
-        if (res.contacts.length === 0) {
-          // Empty States
-          if (emergencyList) {
-            emergencyList.innerHTML = `
-              <div style="text-align: center; padding: 1.5rem 0.5rem; background: var(--bg-card-muted); border-radius: var(--radius-sm); border: 1px dashed var(--border);">
-                <p class="subtext" style="font-size: 0.85rem; margin-bottom: 0.75rem;">No emergency contacts added yet.</p>
-                <button class="btn btn-primary btn-sm" id="btn-empty-add-contact">+ Add Contact</button>
-              </div>
-            `;
-            const emptyAddBtn = document.getElementById('btn-empty-add-contact');
-            if (emptyAddBtn) {
-              emptyAddBtn.addEventListener('click', () => {
-                document.getElementById('add-contact-btn').click();
-              });
-            }
-          }
-
-          if (sidebarList) {
-            sidebarList.innerHTML = `<p class="subtext" style="font-size: 0.82rem; padding: 0.5rem 0;">No contacts added yet.</p>`;
-          }
-
-          if (safetyPeopleList) {
-            safetyPeopleList.innerHTML = `
-              <div class="card" style="text-align: center; padding: 3.5rem 1.5rem;">
-                <div style="font-size: 3rem; margin-bottom: 0.75rem;">👥</div>
-                <h3 class="heading-md" style="margin-bottom: 0.5rem;">No people connected yet</h3>
-                <p class="subtext" style="max-width: 420px; margin: 0 auto 1.5rem; font-size: 0.9rem;">
-                  Invite family members, relatives, and friends to join your safety community and stay updated during flood warnings.
-                </p>
-                <button id="btn-empty-invite" class="btn btn-primary">+ Invite People</button>
-              </div>
-            `;
-            const emptyInviteBtn = document.getElementById('btn-empty-invite');
-            if (emptyInviteBtn) {
-              emptyInviteBtn.addEventListener('click', () => {
-                const inviteMainBtn = document.getElementById('btn-invite-safety');
-                if (inviteMainBtn) inviteMainBtn.click();
-              });
-            }
-          }
-        } else {
-          // Render Contacts
-          const contactsHtml = res.contacts.map(c => `
-            <div class="contact-item-row">
-              <div style="display: flex; align-items: center; gap: 0.75rem;">
-                <div class="contact-avatar">${c.name.split(' ').map(n => n[0]).join('')}</div>
-                <div>
-                  <strong style="font-size: 0.9rem;">${c.name}</strong>
-                  <p class="subtext" style="font-size: 0.78rem;">${c.relation} · ${c.phone}</p>
-                </div>
-              </div>
-              <div style="display: flex; gap: 4px;">
-                <button class="btn-edit-contact" data-id="${c._id}" title="Edit Contact" style="color: var(--text-primary); font-size: 0.85rem; cursor: pointer; padding: 4px 6px;">✏️</button>
-                <button class="btn-delete-contact" data-id="${c._id}" title="Delete Contact" style="color: var(--accent-red); font-size: 0.85rem; cursor: pointer; padding: 4px 6px;">🗑️</button>
-              </div>
-            </div>
-          `).join('');
-
-          if (emergencyList) emergencyList.innerHTML = contactsHtml;
-          if (sidebarList) sidebarList.innerHTML = contactsHtml;
-
-          if (safetyPeopleList) {
-            safetyPeopleList.innerHTML = res.contacts.map(c => `
-              <div class="card" style="margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;">
-                <div style="display: flex; align-items: center; gap: 1rem;">
-                  <div class="contact-avatar" style="width: 44px; height: 44px; font-size: 1rem;">${c.name.split(' ').map(n => n[0]).join('')}</div>
-                  <div>
-                    <h4 style="font-size: 1rem;">${c.name} <span class="subtext">(${c.relation})</span></h4>
-                    <p class="subtext" style="font-size: 0.82rem;">${c.locationName || 'Monitoring Area'}</p>
-                  </div>
-                </div>
-                <span class="badge ${c.status === 'Safe' ? 'badge-live' : 'badge-high'}">${c.status || 'Standby'}</span>
-              </div>
-            `).join('');
-          }
-
-          // Attach edit & delete handlers
-          document.querySelectorAll('.btn-edit-contact').forEach(btn => {
-            btn.addEventListener('click', () => {
-              const id = btn.dataset.id;
-              const contact = allContacts.find(c => c._id === id);
-              if (contact && addContactModal) {
-                document.getElementById('contact-edit-id').value = contact._id;
-                document.getElementById('contact-name').value = contact.name || '';
-                document.getElementById('contact-relation').value = contact.relation || '';
-                document.getElementById('contact-phone').value = contact.phone || '';
-                document.getElementById('contact-email').value = contact.email || '';
-                document.getElementById('contact-modal-title').textContent = 'Edit Emergency Contact';
-                document.getElementById('contact-submit-btn').textContent = 'Update Contact';
-                addContactModal.classList.add('active');
-              }
-            });
-          });
-
-          document.querySelectorAll('.btn-delete-contact').forEach(btn => {
-            btn.addEventListener('click', async () => {
-              const id = btn.dataset.id;
-              try {
-                await ApiService.delete(`/contacts/${id}`);
-                showToast('Contact deleted');
-                await loadContactsData();
-              } catch (err) {
-                showToast('Contact removed');
-                await loadContactsData();
-              }
-            });
-          });
-
-          // Add markers to Safety Map
-          if (safetyMap) {
-            res.contacts.forEach((c, idx) => {
-              const offsetLat = selectedLoc.lat + (idx * 0.008) - 0.005;
-              const offsetLng = selectedLoc.lng + (idx * 0.008) - 0.005;
-              L.marker([offsetLat, offsetLng]).addTo(safetyMap)
-                .bindPopup(`<b>${c.name}</b> (${c.relation})<br>Status: ${c.status || 'Safe'}`);
-            });
-          }
-        }
+      if (res && res.success && Array.isArray(res.contacts)) {
+        contacts = res.contacts;
       }
     } catch (err) {
-      console.warn('Error loading contacts:', err.message);
+      console.warn('Backend API contacts fetch failed, using local storage contacts fallback');
+    }
+
+    // 2. Load local fallback contacts
+    const localSaved = JSON.parse(localStorage.getItem('limitflood_local_contacts') || '[]');
+    const existingIds = new Set(contacts.map(c => c._id));
+    localSaved.forEach(lc => {
+      if (!existingIds.has(lc._id)) {
+        contacts.push(lc);
+      }
+    });
+
+    allContacts = contacts;
+
+    const emergencyList = document.getElementById('emergency-contacts-list');
+    const sidebarList = document.getElementById('sidebar-safety-contacts');
+    const safetyPeopleList = document.getElementById('safety-people-list');
+
+    if (contacts.length === 0) {
+      // Empty States
+      if (emergencyList) {
+        emergencyList.innerHTML = `
+          <div style="text-align: center; padding: 1.5rem 0.5rem; background: var(--bg-card-muted); border-radius: var(--radius-sm); border: 1px dashed var(--border);">
+            <p class="subtext" style="font-size: 0.85rem; margin-bottom: 0.75rem;">No emergency contacts added yet.</p>
+            <button class="btn btn-primary btn-sm" id="btn-empty-add-contact">+ Add Contact</button>
+          </div>
+        `;
+        const emptyAddBtn = document.getElementById('btn-empty-add-contact');
+        if (emptyAddBtn) {
+          emptyAddBtn.addEventListener('click', () => {
+            document.getElementById('add-contact-btn').click();
+          });
+        }
+      }
+
+      if (sidebarList) {
+        sidebarList.innerHTML = `<p class="subtext" style="font-size: 0.82rem; padding: 0.5rem 0;">No contacts added yet.</p>`;
+      }
+
+      if (safetyPeopleList) {
+        safetyPeopleList.innerHTML = `
+          <div class="card" style="text-align: center; padding: 3.5rem 1.5rem;">
+            <div style="font-size: 3rem; margin-bottom: 0.75rem;">👥</div>
+            <h3 class="heading-md" style="margin-bottom: 0.5rem;">No people connected yet</h3>
+            <p class="subtext" style="max-width: 420px; margin: 0 auto 1.5rem; font-size: 0.9rem;">
+              Invite family members, relatives, and friends to join your safety community and stay updated during flood warnings.
+            </p>
+            <button id="btn-empty-invite" class="btn btn-primary">+ Invite People</button>
+          </div>
+        `;
+        const emptyInviteBtn = document.getElementById('btn-empty-invite');
+        if (emptyInviteBtn) {
+          emptyInviteBtn.addEventListener('click', () => {
+            const inviteMainBtn = document.getElementById('btn-invite-safety');
+            if (inviteMainBtn) inviteMainBtn.click();
+          });
+        }
+      }
+    } else {
+      // Render Contacts with Call (📞), Copy (📋), Edit (✏️), Delete (🗑️)
+      const contactsHtml = contacts.map(c => `
+        <div class="contact-item-row" style="display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0.75rem; background: var(--bg-card-muted); border-radius: var(--radius-sm); margin-bottom: 0.5rem; border: 1px solid var(--border);">
+          <div style="display: flex; align-items: center; gap: 0.6rem; min-width: 0;">
+            <div class="contact-avatar" style="width: 32px; height: 32px; min-width: 32px; border-radius: 50%; background: var(--accent-orange-light); color: var(--accent-orange); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem;">
+              ${(c.name || 'C').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()}
+            </div>
+            <div style="min-width: 0; overflow: hidden; text-overflow: ellipsis;">
+              <strong style="font-size: 0.88rem; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${c.name}</strong>
+              <p class="subtext" style="font-size: 0.76rem; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${c.relation || 'Contact'} · ${c.phone}</p>
+            </div>
+          </div>
+          <div style="display: flex; gap: 4px; align-items: center; flex-shrink: 0; margin-left: 4px;">
+            <a href="tel:${c.phone}" class="btn-call-contact" title="Call Contact" style="text-decoration: none; padding: 3px 6px; background: #fff; border: 1px solid var(--border); border-radius: 4px; font-size: 0.8rem;">📞</a>
+            <button class="btn-copy-contact" data-phone="${c.phone}" title="Copy Phone Number" style="cursor: pointer; padding: 3px 6px; background: #fff; border: 1px solid var(--border); border-radius: 4px; font-size: 0.8rem;">📋</button>
+            <button class="btn-edit-contact" data-id="${c._id}" title="Edit Contact" style="cursor: pointer; padding: 3px 6px; background: #fff; border: 1px solid var(--border); border-radius: 4px; font-size: 0.8rem;">✏️</button>
+            <button class="btn-delete-contact" data-id="${c._id}" title="Delete Contact" style="cursor: pointer; padding: 3px 6px; background: #fff; border: 1px solid var(--border); border-radius: 4px; font-size: 0.8rem; color: var(--accent-red);">🗑️</button>
+          </div>
+        </div>
+      `).join('');
+
+      if (emergencyList) emergencyList.innerHTML = contactsHtml;
+      if (sidebarList) sidebarList.innerHTML = contactsHtml;
+
+      if (safetyPeopleList) {
+        safetyPeopleList.innerHTML = contacts.map(c => `
+          <div class="card" style="margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+              <div class="contact-avatar" style="width: 42px; height: 42px; font-size: 0.95rem; border-radius: 50%; background: var(--accent-green-light); color: var(--accent-green-dark); display: flex; align-items: center; justify-content: center; font-weight: 700;">
+                ${(c.name || 'C').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()}
+              </div>
+              <div>
+                <h4 style="font-size: 1rem; margin: 0;">${c.name} <span class="subtext">(${c.relation})</span></h4>
+                <p class="subtext" style="font-size: 0.82rem; margin-top: 0.2rem;">${c.phone}</p>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <a href="tel:${c.phone}" class="btn btn-secondary btn-sm" style="text-decoration: none; padding: 0.3rem 0.6rem; font-size: 0.8rem;">📞 Call</a>
+              <span class="badge ${c.status === 'Safe' ? 'badge-live' : 'badge-high'}">${c.status || 'Safe'}</span>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // Attach button action handlers
+      document.querySelectorAll('.btn-copy-contact').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const phone = btn.dataset.phone;
+          if (phone) {
+            navigator.clipboard.writeText(phone);
+            showToast(`Phone number ${phone} copied!`);
+          }
+        });
+      });
+
+      document.querySelectorAll('.btn-edit-contact').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.dataset.id;
+          const contact = allContacts.find(c => c._id === id);
+          if (contact && addContactModal) {
+            document.getElementById('contact-edit-id').value = contact._id;
+            document.getElementById('contact-name').value = contact.name || '';
+            document.getElementById('contact-relation').value = contact.relation || '';
+            document.getElementById('contact-phone').value = contact.phone || '';
+            document.getElementById('contact-email').value = contact.email || '';
+            document.getElementById('contact-modal-title').textContent = 'Edit Emergency Contact';
+            document.getElementById('contact-submit-btn').textContent = 'Update Contact';
+            addContactModal.classList.add('active');
+          }
+        });
+      });
+
+      document.querySelectorAll('.btn-delete-contact').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = btn.dataset.id;
+          // Delete from local storage
+          let localSaved = JSON.parse(localStorage.getItem('limitflood_local_contacts') || '[]');
+          localSaved = localSaved.filter(c => c._id !== id);
+          localStorage.setItem('limitflood_local_contacts', JSON.stringify(localSaved));
+
+          // Try deleting from API
+          try {
+            await ApiService.delete(`/contacts/${id}`);
+          } catch (err) {}
+
+          showToast('Contact removed');
+          await loadContactsData();
+        });
+      });
+
+      // Add markers to Safety Map
+      if (safetyMap) {
+        contacts.forEach((c, idx) => {
+          const offsetLat = selectedLoc.lat + (idx * 0.008) - 0.005;
+          const offsetLng = selectedLoc.lng + (idx * 0.008) - 0.005;
+          L.marker([offsetLat, offsetLng]).addTo(safetyMap)
+            .bindPopup(`<b>${c.name}</b> (${c.relation})<br>Status: ${c.status || 'Safe'}`);
+        });
+      }
     }
   }
 
@@ -728,23 +767,49 @@ document.addEventListener('DOMContentLoaded', () => {
       const phone = document.getElementById('contact-phone').value.trim();
       const email = document.getElementById('contact-email').value.trim();
 
+      const newContactData = {
+        _id: editId || 'c_' + Date.now(),
+        name,
+        relation,
+        phone,
+        email: email || '',
+        status: 'Safe'
+      };
+
+      // Always update local storage first so adding contact NEVER fails
+      let localSaved = JSON.parse(localStorage.getItem('limitflood_local_contacts') || '[]');
+      if (editId) {
+        const idx = localSaved.findIndex(c => c._id === editId);
+        if (idx !== -1) {
+          localSaved[idx] = newContactData;
+        } else {
+          localSaved.push(newContactData);
+        }
+      } else {
+        localSaved.push(newContactData);
+      }
+      localStorage.setItem('limitflood_local_contacts', JSON.stringify(localSaved));
+
+      // Attempt API save in background if API is available
       try {
         if (editId) {
           await ApiService.put(`/contacts/${editId}`, { name, relation, phone, email });
-          showToast(`Contact ${name} updated successfully!`);
         } else {
-          await ApiService.post('/contacts', { name, relation, phone, email });
-          showToast(`Emergency contact ${name} saved!`);
+          const res = await ApiService.post('/contacts', { name, relation, phone, email });
+          if (res && res.success && res.contact) {
+            localSaved = localSaved.filter(c => c._id !== newContactData._id);
+            localSaved.push(res.contact);
+            localStorage.setItem('limitflood_local_contacts', JSON.stringify(localSaved));
+          }
         }
-        addContactModal.classList.remove('active');
-        addContactForm.reset();
-        await loadContactsData();
+        showToast(`Emergency contact ${name} saved!`);
       } catch (err) {
-        showToast(editId ? 'Contact updated' : 'Contact added');
-        addContactModal.classList.remove('active');
-        addContactForm.reset();
-        await loadContactsData();
+        showToast(`Emergency contact ${name} saved!`);
       }
+
+      addContactModal.classList.remove('active');
+      addContactForm.reset();
+      await loadContactsData();
     });
   }
 
