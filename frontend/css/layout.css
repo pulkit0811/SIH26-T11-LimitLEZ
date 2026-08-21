@@ -90,8 +90,7 @@
 
 .dashboard-main {
   padding: 2rem;
-  border-right: 1px solid var(--border); 
-  
+  border-right: 1px solid var(--border);
 }
 
 .dashboard-sidebar {
