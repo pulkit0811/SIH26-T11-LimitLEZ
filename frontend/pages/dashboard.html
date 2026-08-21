@@ -1,30 +1,18 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LimitFLOOD — Dashboard</title>
-  <link rel="icon" type="image/png" href="../assets/limitlez-favicon.png">
-  <link rel="stylesheet" href="../css/base.css">
-  <link rel="stylesheet" href="../css/components.css">
-  <link rel="stylesheet" href="../css/layout.css">
-  <link rel="stylesheet" href="../css/dashboard.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  
-  <!-- Leaflet CSS & JS for Real Interactive Maps -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-</head>
-<body>
-  <!-- Toast Container -->
-  <div id="toast-container" class="toast-container"></div>
-
-  <!-- Top Navigation -->
-  <header class="header-nav">
-    <div class="logo">
-      <div class="logo-icon">~</div>
-      <span>LimitFLOOD</span>
-    </div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LimitFLOOD — Dashboard</title>
+    <link rel="icon" type="image/png" href="../assets/limitlez-favicon.png" />
+    <link rel="stylesheet" href="../css/base.css" />
+    <link rel="stylesheet" href="../css/components.css" />
+    <link rel="stylesheet" href="../css/layout.css" />
+    <link rel="stylesheet" href="../css/dashboard.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
 
     <button id="hamburger-btn" class="nav-hamburger" aria-label="Open menu">
       <span></span><span></span><span></span>
@@ -40,275 +28,781 @@
       <a href="#helpline" class="nav-tab" data-tab="helpline">Helpline 📞</a>
     </nav>
 
-    <div class="nav-right">
-      <span id="current-location-label" title="Click to change location" style="cursor: pointer; padding: 0.3rem 0.6rem; background: rgba(0,0,0,0.04); border-radius: var(--radius-sm); font-weight: 600;">📍 Lucknow</span>
-      <a href="profile.html">Profile</a>
-      <span class="badge badge-live"><span class="badge-dot"></span> Live</span>
-    </div>
-  </header>
+    <!-- Top Navigation -->
+    <header class="header-nav">
+      <div class="logo">
+        <div class="logo-icon">~</div>
+        <span>LimitFLOOD</span>
+      </div>
 
-  <!-- TAB CONTENT PANELS -->
-  <main id="tab-container">
-    
-    <!-- 1. OVERVIEW TAB -->
-    <section id="tab-overview" class="tab-panel active">
-      <div class="dashboard-layout">
-        <div class="dashboard-main">
-          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem;">
-            <div>
-              <p class="label-caps">MONITORING</p>
-              <h1 class="heading-lg" id="overview-location-heading">Lucknow, Uttar Pradesh</h1>
-            </div>
-            <div style="text-align: right;">
-              <span class="subtext" id="overview-updated-time">Updated recently</span>
-              <span class="badge badge-live" style="margin-left: 0.5rem;"><span class="badge-dot"></span> Live</span>
-            </div>
-          </div>
+      <button id="hamburger-btn" class="nav-hamburger" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
 
-          <!-- Risk Score Card -->
-          <div class="card" style="margin-bottom: 2rem;">
-            <p class="label-caps" style="margin-bottom: 0.5rem;">CURRENT FLOOD RISK</p>
-            <div style="display: flex; align-items: baseline; gap: 0.5rem; margin-bottom: 1rem;">
-              <span id="risk-score-value" style="font-size: 4rem; font-weight: 800; color: var(--accent-orange); line-height: 1;">--</span>
-              <span id="risk-category-label" style="font-size: 1.2rem; color: var(--text-muted); font-weight: 600;">Fetching live data...</span>
-            </div>
+      <nav class="nav-tabs" id="desktop-nav">
+        <a href="#overview" class="nav-tab active" data-tab="overview"
+          >Overview</a
+        >
+        <a href="#map" class="nav-tab" data-tab="map">Map</a>
+        <a href="#alerts" class="nav-tab" data-tab="alerts"
+          >Alerts
+          <span
+            id="nav-alerts-badge"
+            class="badge badge-critical"
+            style="padding: 2px 6px; font-size: 0.7rem; display: none"
+          ></span
+        ></a>
+        <a href="#emergency" class="nav-tab" data-tab="emergency">Emergency</a>
+        <a href="#safety" class="nav-tab" data-tab="safety">Safety</a>
+        <a href="#shelters" class="nav-tab" data-tab="shelters">Shelters</a>
+      </nav>
 
-            <!-- Risk Gradient Scale Bar -->
-            <div style="position: relative; margin-bottom: 1.5rem;">
-              <div style="height: 10px; border-radius: 5px; background: linear-gradient(to right, var(--risk-low), var(--risk-moderate), var(--risk-high), var(--risk-critical));"></div>
-              <div id="risk-marker" style="position: absolute; top: -4px; left: 0%; transform: translateX(-50%); width: 4px; height: 18px; background: #000; border-radius: 2px; transition: left 0.8s ease;"></div>
-              <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted); margin-top: 0.4rem;">
-                <span>Low</span>
-                <span>Moderate</span>
-                <span>High</span>
-                <span>Critical</span>
+      <div class="nav-right">
+        <span
+          id="current-location-label"
+          title="Click to change location"
+          style="
+            cursor: pointer;
+            padding: 0.3rem 0.6rem;
+            background: rgba(0, 0, 0, 0.04);
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+          "
+          >📍 Lucknow</span
+        >
+        <a href="profile.html">Profile</a>
+        <span class="badge badge-live"
+          ><span class="badge-dot"></span> Live</span
+        >
+      </div>
+    </header>
+
+    <!-- TAB CONTENT PANELS -->
+    <main id="tab-container">
+      <!-- 1. OVERVIEW TAB -->
+      <section id="tab-overview" class="tab-panel active">
+        <div class="dashboard-layout">
+          <div class="dashboard-main">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                margin-bottom: 1.5rem;
+              "
+            >
+              <div>
+                <p class="label-caps">MONITORING</p>
+                <h1 class="heading-lg" id="overview-location-heading">
+                  Lucknow, Uttar Pradesh
+                </h1>
+              </div>
+              <div style="text-align: right">
+                <span class="subtext" id="overview-updated-time"
+                  >Updated recently</span
+                >
+                <span class="badge badge-live" style="margin-left: 0.5rem"
+                  ><span class="badge-dot"></span> Live</span
+                >
               </div>
             </div>
 
-            <p style="color: var(--accent-orange); font-size: 0.85rem; font-weight: 600;" id="risk-trend-label">↗ Calculating via Open-Meteo live telemetry...</p>
+            <!-- Risk Score Card -->
+            <div class="card" style="margin-bottom: 2rem">
+              <p class="label-caps" style="margin-bottom: 0.5rem">
+                CURRENT FLOOD RISK
+              </p>
+              <div
+                style="
+                  display: flex;
+                  align-items: baseline;
+                  gap: 0.5rem;
+                  margin-bottom: 1rem;
+                "
+              >
+                <span
+                  id="risk-score-value"
+                  style="
+                    font-size: 4rem;
+                    font-weight: 800;
+                    color: var(--accent-orange);
+                    line-height: 1;
+                  "
+                  >--</span
+                >
+                <span
+                  id="risk-category-label"
+                  style="
+                    font-size: 1.2rem;
+                    color: var(--text-muted);
+                    font-weight: 600;
+                  "
+                  >Fetching live data...</span
+                >
+              </div>
+
+              <!-- Risk Gradient Scale Bar -->
+              <div style="position: relative; margin-bottom: 1.5rem">
+                <div
+                  style="
+                    height: 10px;
+                    border-radius: 5px;
+                    background: linear-gradient(
+                      to right,
+                      var(--risk-low),
+                      var(--risk-moderate),
+                      var(--risk-high),
+                      var(--risk-critical)
+                    );
+                  "
+                ></div>
+                <div
+                  id="risk-marker"
+                  style="
+                    position: absolute;
+                    top: -4px;
+                    left: 0%;
+                    transform: translateX(-50%);
+                    width: 4px;
+                    height: 18px;
+                    background: #000;
+                    border-radius: 2px;
+                    transition: left 0.8s ease;
+                  "
+                ></div>
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    font-size: 0.75rem;
+                    color: var(--text-muted);
+                    margin-top: 0.4rem;
+                  "
+                >
+                  <span>Low</span>
+                  <span>Moderate</span>
+                  <span>High</span>
+                  <span>Critical</span>
+                </div>
+              </div>
+
+              <p
+                style="
+                  color: var(--accent-orange);
+                  font-size: 0.85rem;
+                  font-weight: 600;
+                "
+                id="risk-trend-label"
+              >
+                ↗ Calculating via Open-Meteo live telemetry...
+              </p>
+            </div>
+
+            <!-- Contributing Conditions -->
+            <div style="margin-bottom: 2rem">
+              <p class="label-caps" style="margin-bottom: 1rem">
+                CONTRIBUTING CONDITIONS
+              </p>
+
+              <div class="condition-row">
+                <span class="condition-label">Rainfall</span>
+                <span class="condition-val" id="val-rainfall">-- mm/h</span>
+                <div class="progress-bar-bg">
+                  <div
+                    class="progress-bar-fill"
+                    id="bar-rainfall"
+                    style="width: 0%"
+                  ></div>
+                </div>
+                <span class="condition-pct" id="pct-rainfall">--%</span>
+              </div>
+
+              <div class="condition-row">
+                <span class="condition-label">Soil saturation</span>
+                <span class="condition-val" id="val-soil">--%</span>
+                <div class="progress-bar-bg">
+                  <div
+                    class="progress-bar-fill"
+                    id="bar-soil"
+                    style="width: 0%"
+                  ></div>
+                </div>
+                <span class="condition-pct" id="pct-soil">--%</span>
+              </div>
+
+              <div class="condition-row">
+                <span class="condition-label">Water proximity</span>
+                <span class="condition-val" id="val-prox">-- km</span>
+                <div class="progress-bar-bg">
+                  <div
+                    class="progress-bar-fill"
+                    id="bar-prox"
+                    style="width: 0%"
+                  ></div>
+                </div>
+                <span class="condition-pct" id="pct-prox">--%</span>
+              </div>
+            </div>
+
+            <!-- Small Interactive Overview Map -->
+            <div
+              class="card"
+              style="
+                margin-bottom: 2rem;
+                padding: 0;
+                overflow: hidden;
+                position: relative;
+              "
+            >
+              <div style="padding: 1rem 1.5rem 0.5rem">
+                <p class="label-caps">RISK OVERVIEW MAP</p>
+              </div>
+              <div
+                id="overview-mini-map"
+                style="width: 100%; height: 220px"
+              ></div>
+              <button
+                id="btn-expand-map"
+                class="btn btn-primary btn-sm"
+                style="
+                  position: absolute;
+                  bottom: 12px;
+                  right: 12px;
+                  z-index: 1000;
+                  box-shadow: var(--shadow-md);
+                "
+              >
+                Expand Map →
+              </button>
+            </div>
+
+            <!-- Environmental Conditions Weather Chart -->
+            <div class="card">
+              <p class="label-caps" style="margin-bottom: 1rem">
+                ENVIRONMENTAL CONDITIONS (OPEN-METEO LIVE)
+              </p>
+              <div
+                style="
+                  display: grid;
+                  grid-template-columns: repeat(4, 1fr);
+                  gap: 1rem;
+                  margin-bottom: 1.5rem;
+                "
+              >
+                <div>
+                  <span class="subtext">TEMPERATURE</span>
+                  <h3 id="env-temp">--°C</h3>
+                </div>
+                <div>
+                  <span class="subtext">RAINFALL</span>
+                  <h3 id="env-rain">-- mm/h</h3>
+                </div>
+                <div>
+                  <span class="subtext">HUMIDITY</span>
+                  <h3 id="env-humidity">--%</h3>
+                </div>
+                <div>
+                  <span class="subtext">WIND</span>
+                  <h3 id="env-wind">-- km/h</h3>
+                </div>
+              </div>
+              <canvas
+                id="precip-canvas"
+                height="120"
+                style="width: 100%"
+              ></canvas>
+            </div>
           </div>
 
-          <!-- Contributing Conditions -->
-          <div style="margin-bottom: 2rem;">
-            <p class="label-caps" style="margin-bottom: 1rem;">CONTRIBUTING CONDITIONS</p>
-            
-            <div class="condition-row">
-              <span class="condition-label">Rainfall</span>
-              <span class="condition-val" id="val-rainfall">-- mm/h</span>
-              <div class="progress-bar-bg"><div class="progress-bar-fill" id="bar-rainfall" style="width: 0%;"></div></div>
-              <span class="condition-pct" id="pct-rainfall">--%</span>
+          <!-- Sidebar -->
+          <div class="dashboard-sidebar">
+            <!-- Flash Flood Warning Box -->
+            <div
+              class="card"
+              style="
+                border-left: 4px solid var(--accent-orange);
+                margin-bottom: 1.5rem;
+                background: #fff9f5;
+              "
+            >
+              <p class="label-caps" style="color: var(--accent-orange-hover)">
+                FLASH FLOOD WARNING
+              </p>
+              <p
+                style="font-size: 0.9rem; font-weight: 600; margin: 0.5rem 0"
+                id="warning-box-body"
+              >
+                High flood probability detected within 4.2 km. Rainfall expected
+                to intensify.
+              </p>
+              <a
+                href="#map"
+                class="nav-tab"
+                data-tab="map"
+                style="
+                  color: var(--accent-orange-hover);
+                  font-size: 0.85rem;
+                  font-weight: 600;
+                "
+                >View on map →</a
+              >
             </div>
 
-            <div class="condition-row">
-              <span class="condition-label">Soil saturation</span>
-              <span class="condition-val" id="val-soil">--%</span>
-              <div class="progress-bar-bg"><div class="progress-bar-fill" id="bar-soil" style="width: 0%;"></div></div>
-              <span class="condition-pct" id="pct-soil">--%</span>
+            <!-- Quick Access -->
+            <div class="card" style="margin-bottom: 1.5rem">
+              <p class="label-caps" style="margin-bottom: 0.75rem">
+                QUICK ACCESS
+              </p>
+              <div
+                class="quick-link-row emergency-sos-row nav-tab"
+                data-tab="emergency"
+                style="
+                  background: var(--accent-red-light);
+                  color: var(--accent-red);
+                "
+              >
+                <span>🚨 Emergency SOS</span> <span>›</span>
+              </div>
+              <div class="quick-link-row nav-tab" data-tab="map">
+                <span>Live flood map</span> <span>›</span>
+              </div>
+              <div class="quick-link-row nav-tab" data-tab="shelters">
+                <span>Evacuation shelters</span> <span>›</span>
+              </div>
+              <div class="quick-link-row nav-tab" data-tab="safety">
+                <span>Safety Circle</span> <span>›</span>
+              </div>
             </div>
 
-            <div class="condition-row">
-              <span class="condition-label">Water proximity</span>
-              <span class="condition-val" id="val-prox">-- km</span>
-              <div class="progress-bar-bg"><div class="progress-bar-fill" id="bar-prox" style="width: 0%;"></div></div>
-              <span class="condition-pct" id="pct-prox">--%</span>
+            <!-- Safety Circle Quick View -->
+            <div class="card">
+              <div
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  margin-bottom: 1rem;
+                "
+              >
+                <p class="label-caps">SAFETY CIRCLE</p>
+                <a
+                  href="#safety"
+                  class="nav-tab"
+                  data-tab="safety"
+                  style="font-size: 0.8rem; color: var(--accent-green-dark)"
+                  >View all</a
+                >
+              </div>
+              <div id="sidebar-safety-contacts"></div>
             </div>
           </div>
+        </div>
+      </section>
 
-          <!-- Small Interactive Overview Map -->
-          <div class="card" style="margin-bottom: 2rem; padding: 0; overflow: hidden; position: relative;">
-            <div style="padding: 1rem 1.5rem 0.5rem;">
-              <p class="label-caps">RISK OVERVIEW MAP</p>
+      <!-- 2. MAP TAB -->
+      <section id="tab-map" class="tab-panel">
+        <div
+          style="position: relative; width: 100%; height: calc(100vh - 64px)"
+        >
+          <div id="main-leaflet-map" style="width: 100%; height: 100%"></div>
+
+          <!-- Floating Risk Info Panel -->
+          <div
+            class="card"
+            style="
+              position: absolute;
+              top: 1.5rem;
+              left: 1.5rem;
+              z-index: 1000;
+              width: 320px;
+              background: rgba(255, 255, 255, 0.96);
+              backdrop-filter: blur(8px);
+              box-shadow: var(--shadow-lg);
+            "
+          >
+            <p class="label-caps">SELECTED LOCATION RISK INFO</p>
+            <h3 id="map-info-area" style="margin: 0.25rem 0 0.5rem">
+              Gomti Nagar, Lucknow
+            </h3>
+            <div
+              style="
+                display: flex;
+                align-items: baseline;
+                gap: 0.5rem;
+                margin-bottom: 0.5rem;
+              "
+            >
+              <span
+                id="map-info-score"
+                style="
+                  font-size: 2.2rem;
+                  font-weight: 800;
+                  color: var(--accent-orange);
+                "
+                >--</span
+              >
+              <span class="subtext">/ 100</span>
+              <span
+                id="map-info-badge"
+                class="badge badge-high"
+                style="margin-left: auto"
+                >High risk</span
+              >
             </div>
-            <div id="overview-mini-map" style="width: 100%; height: 220px;"></div>
-            <button id="btn-expand-map" class="btn btn-primary btn-sm" style="position: absolute; bottom: 12px; right: 12px; z-index: 1000; box-shadow: var(--shadow-md);">
-              Expand Map →
+            <p id="map-info-details" class="subtext" style="font-size: 0.82rem">
+              Fetching live risk data...
+            </p>
+            <p
+              style="
+                font-size: 0.72rem;
+                color: var(--text-muted);
+                margin-top: 0.5rem;
+              "
+            >
+              💡 Click anywhere on map or search above to select a location.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. ALERTS TAB -->
+      <section id="tab-alerts" class="tab-panel">
+        <div style="max-width: 800px; margin: 2rem auto; padding: 0 1rem">
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-bottom: 1.5rem;
+            "
+          >
+            <h2 class="heading-lg">Active Alerts</h2>
+            <button id="mark-all-read-btn" class="btn btn-secondary btn-sm">
+              Mark all as read
             </button>
           </div>
 
-          <!-- Environmental Conditions Weather Chart -->
-          <div class="card">
-            <p class="label-caps" style="margin-bottom: 1rem;">ENVIRONMENTAL CONDITIONS (OPEN-METEO LIVE)</p>
-            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
-              <div><span class="subtext">TEMPERATURE</span><h3 id="env-temp">--°C</h3></div>
-              <div><span class="subtext">RAINFALL</span><h3 id="env-rain">-- mm/h</h3></div>
-              <div><span class="subtext">HUMIDITY</span><h3 id="env-humidity">--%</h3></div>
-              <div><span class="subtext">WIND</span><h3 id="env-wind">-- km/h</h3></div>
-            </div>
-            <canvas id="precip-canvas" height="120" style="width: 100%;"></canvas>
+          <!-- Empty State Container -->
+          <div
+            id="alerts-empty-state"
+            class="card"
+            style="text-align: center; padding: 3rem 1.5rem; display: none"
+          >
+            <div style="font-size: 3rem; margin-bottom: 1rem">🛡️</div>
+            <h3 class="heading-md" style="margin-bottom: 0.5rem">
+              No active alerts
+            </h3>
+            <p class="subtext">
+              All flood monitoring systems report normal conditions for your
+              area.
+            </p>
           </div>
 
+          <div id="alerts-list"></div>
         </div>
+      </section>
 
-        <!-- Sidebar -->
-        <div class="dashboard-sidebar">
-          <!-- Flash Flood Warning Box -->
-          <div class="card" style="border-left: 4px solid var(--accent-orange); margin-bottom: 1.5rem; background: #FFF9F5;">
-            <p class="label-caps" style="color: var(--accent-orange-hover);">FLASH FLOOD WARNING</p>
-            <p style="font-size: 0.9rem; font-weight: 600; margin: 0.5rem 0;" id="warning-box-body">High flood probability detected within 4.2 km. Rainfall expected to intensify.</p>
-            <a href="#map" class="nav-tab" data-tab="map" style="color: var(--accent-orange-hover); font-size: 0.85rem; font-weight: 600;">View on map →</a>
-          </div>
-
-          <!-- Quick Access -->
-          <div class="card" style="margin-bottom: 1.5rem;">
-            <p class="label-caps" style="margin-bottom: 0.75rem;">QUICK ACCESS</p>
-            <div class="quick-link-row emergency-sos-row nav-tab" data-tab="emergency" style="background: var(--accent-red-light); color: var(--accent-red);">
-              <span>🚨 Emergency SOS</span> <span>›</span>
-            </div>
-            <div class="quick-link-row nav-tab" data-tab="map"><span>Live flood map</span> <span>›</span></div>
-            <div class="quick-link-row nav-tab" data-tab="shelters"><span>Evacuation shelters</span> <span>›</span></div>
-            <div class="quick-link-row nav-tab" data-tab="safety"><span>Safety Circle</span> <span>›</span></div>
-          </div>
-
-          <!-- Safety Circle Quick View -->
-          <div class="card">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-              <p class="label-caps">SAFETY CIRCLE</p>
-              <a href="#safety" class="nav-tab" data-tab="safety" style="font-size: 0.8rem; color: var(--accent-green-dark);">View all</a>
-            </div>
-            <div id="sidebar-safety-contacts"></div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 2. MAP TAB -->
-    <section id="tab-map" class="tab-panel">
-      <div style="position: relative; width: 100%; height: calc(100vh - 64px);">
-        <div id="main-leaflet-map" style="width: 100%; height: 100%;"></div>
-        
-        <!-- Floating Risk Info Panel -->
-        <div class="card" style="position: absolute; top: 1.5rem; left: 1.5rem; z-index: 1000; width: 320px; background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(8px); box-shadow: var(--shadow-lg);">
-          <p class="label-caps">SELECTED LOCATION RISK INFO</p>
-          <h3 id="map-info-area" style="margin: 0.25rem 0 0.5rem;">Gomti Nagar, Lucknow</h3>
-          <div style="display: flex; align-items: baseline; gap: 0.5rem; margin-bottom: 0.5rem;">
-            <span id="map-info-score" style="font-size: 2.2rem; font-weight: 800; color: var(--accent-orange);">--</span>
-            <span class="subtext">/ 100</span>
-            <span id="map-info-badge" class="badge badge-high" style="margin-left: auto;">High risk</span>
-          </div>
-          <p id="map-info-details" class="subtext" style="font-size: 0.82rem;">Fetching live risk data...</p>
-          <p style="font-size: 0.72rem; color: var(--text-muted); margin-top: 0.5rem;">💡 Click anywhere on map or search above to select a location.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- 3. ALERTS TAB -->
-    <section id="tab-alerts" class="tab-panel">
-      <div style="max-width: 800px; margin: 2rem auto; padding: 0 1rem;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-          <h2 class="heading-lg">Active Alerts</h2>
-          <button id="mark-all-read-btn" class="btn btn-secondary btn-sm">Mark all as read</button>
-        </div>
-        
-        <!-- Empty State Container -->
-        <div id="alerts-empty-state" class="card" style="text-align: center; padding: 3rem 1.5rem; display: none;">
-          <div style="font-size: 3rem; margin-bottom: 1rem;">🛡️</div>
-          <h3 class="heading-md" style="margin-bottom: 0.5rem;">No active alerts</h3>
-          <p class="subtext">All flood monitoring systems report normal conditions for your area.</p>
-        </div>
-
-        <div id="alerts-list"></div>
-      </div>
-    </section>
-
-    <!-- 4. EMERGENCY TAB -->
-    <section id="tab-emergency" class="tab-panel">
-      <div class="dashboard-layout">
-        <div class="dashboard-main" style="display: flex; flex-direction: column; align-items: center; text-align: center; padding-top: 2rem;">
-          <p class="label-caps" style="margin-bottom: 1.5rem;">PRESS AND HOLD TO SEND SOS</p>
-          
-          <button id="sos-hold-btn" class="sos-btn">
-            <span style="font-size: 1.8rem; font-weight: 800; color: var(--accent-red);">SOS</span>
-            <span style="font-size: 0.75rem; color: var(--text-muted);">HOLD</span>
-          </button>
-
-          <p class="subtext" style="margin-top: 1.5rem; max-width: 340px; font-size: 0.88rem;">
-            Hold for 2 seconds to activate. Your live GPS coordinates will be dispatched to all emergency contacts.
-          </p>
-
-          <!-- 300m - 400m Nearby Emergency Mesh Network Card -->
-          <div class="card" style="width: 100%; max-width: 580px; margin-top: 2rem; text-align: left; border: 1px solid var(--border);">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-              <div>
-                <span class="label-caps" style="color: var(--accent-orange-hover);">OFFLINE P2P MESH NETWORK</span>
-                <h3 class="heading-md" style="font-size: 1.1rem; margin-top: 0.2rem;">📡 Nearby Emergency Mesh (Range: 300m – 400m)</h3>
-              </div>
-              <span class="badge badge-live"><span class="badge-dot"></span> Active</span>
-            </div>
-
-            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.25rem; line-height: 1.5;">
-              Connects directly with nearby flood survivors and relay nodes within 300m–400m range via BLE & Wi-Fi Direct radio — works even during cellular network outages.
+      <!-- 4. EMERGENCY TAB -->
+      <section id="tab-emergency" class="tab-panel">
+        <div class="dashboard-layout">
+          <div
+            class="dashboard-main"
+            style="
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              text-align: center;
+              padding-top: 2rem;
+            "
+          >
+            <p class="label-caps" style="margin-bottom: 1.5rem">
+              PRESS AND HOLD TO SEND SOS
             </p>
 
-            <!-- Active Peers Container -->
-            <div id="mesh-peers-container" style="display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1.25rem;">
-              <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-card-muted); padding: 0.75rem 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border);">
-                <div style="display: flex; align-items: center; gap: 0.75rem;">
-                  <span style="font-size: 1.2rem;">📱</span>
-                  <div>
-                    <strong style="font-size: 0.88rem;">Peer Node #LF-942</strong>
-                    <p class="subtext" style="font-size: 0.76rem;">120m away · Signal 94% · Status: Safe</p>
-                  </div>
+            <button id="sos-hold-btn" class="sos-btn">
+              <span
+                style="
+                  font-size: 1.8rem;
+                  font-weight: 800;
+                  color: var(--accent-white);
+                "
+                >SOS</span
+              >
+              <span style="font-size: 0.75rem; color: var(--text-muted)"
+                >HOLD</span
+              >
+            </button>
+
+            <p
+              class="subtext"
+              style="margin-top: 1.5rem; max-width: 340px; font-size: 0.88rem"
+            >
+              Hold for 2 seconds to activate. Your live GPS coordinates will be
+              dispatched to all emergency contacts.
+            </p>
+
+            <!-- 300m - 400m Nearby Emergency Mesh Network Card -->
+            <div
+              class="card"
+              style="
+                width: 100%;
+                max-width: 580px;
+                margin-top: 2rem;
+                text-align: left;
+                border: 1px solid var(--border);
+              "
+            >
+              <div
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  margin-bottom: 1rem;
+                "
+              >
+                <div>
+                  <span
+                    class="label-caps"
+                    style="color: var(--accent-orange-hover)"
+                    >OFFLINE P2P MESH NETWORK</span
+                  >
+                  <h3
+                    class="heading-md"
+                    style="font-size: 1.1rem; margin-top: 0.2rem"
+                  >
+                    📡 Nearby Emergency Mesh (Range: 300m – 400m)
+                  </h3>
                 </div>
-                <button class="btn btn-secondary btn-sm btn-mesh-ping" data-peer="LF-942">Ping Peer</button>
+                <span class="badge badge-live"
+                  ><span class="badge-dot"></span> Active</span
+                >
               </div>
 
-              <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-card-muted); padding: 0.75rem 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border);">
-                <div style="display: flex; align-items: center; gap: 0.75rem;">
-                  <span style="font-size: 1.2rem;">🚨</span>
-                  <div>
-                    <strong style="font-size: 0.88rem; color: var(--accent-red);">Peer Node #LF-318 (Water Rising)</strong>
-                    <p class="subtext" style="font-size: 0.76rem;">280m away · Signal 78% · Status: Needs Check-in</p>
+              <p
+                style="
+                  font-size: 0.85rem;
+                  color: var(--text-secondary);
+                  margin-bottom: 1.25rem;
+                  line-height: 1.5;
+                "
+              >
+                Connects directly with nearby flood survivors and relay nodes
+                within 300m–400m range via BLE & Wi-Fi Direct radio — works even
+                during cellular network outages.
+              </p>
+
+              <!-- Active Peers Container -->
+              <div
+                id="mesh-peers-container"
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  gap: 0.6rem;
+                  margin-bottom: 1.25rem;
+                "
+              >
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    background: var(--bg-card-muted);
+                    padding: 0.75rem 1rem;
+                    border-radius: var(--radius-sm);
+                    border: 1px solid var(--border);
+                  "
+                >
+                  <div style="display: flex; align-items: center; gap: 0.75rem">
+                    <span style="font-size: 1.2rem">📱</span>
+                    <div>
+                      <strong style="font-size: 0.88rem"
+                        >Peer Node #LF-942</strong
+                      >
+                      <p class="subtext" style="font-size: 0.76rem">
+                        120m away · Signal 94% · Status: Safe
+                      </p>
+                    </div>
                   </div>
+                  <button
+                    class="btn btn-secondary btn-sm btn-mesh-ping"
+                    data-peer="LF-942"
+                  >
+                    Ping Peer
+                  </button>
                 </div>
-                <button class="btn btn-primary btn-sm btn-mesh-ping" data-peer="LF-318">Ping Peer</button>
+
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    background: var(--bg-card-muted);
+                    padding: 0.75rem 1rem;
+                    border-radius: var(--radius-sm);
+                    border: 1px solid var(--border);
+                  "
+                >
+                  <div style="display: flex; align-items: center; gap: 0.75rem">
+                    <span style="font-size: 1.2rem">🚨</span>
+                    <div>
+                      <strong
+                        style="font-size: 0.88rem; color: var(--accent-red)"
+                        >Peer Node #LF-318 (Water Rising)</strong
+                      >
+                      <p class="subtext" style="font-size: 0.76rem">
+                        280m away · Signal 78% · Status: Needs Check-in
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    class="btn btn-primary btn-sm btn-mesh-ping"
+                    data-peer="LF-318"
+                  >
+                    Ping Peer
+                  </button>
+                </div>
+
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    background: var(--bg-card-muted);
+                    padding: 0.75rem 1rem;
+                    border-radius: var(--radius-sm);
+                    border: 1px solid var(--border);
+                  "
+                >
+                  <div style="display: flex; align-items: center; gap: 0.75rem">
+                    <span style="font-size: 1.2rem">📡</span>
+                    <div>
+                      <strong style="font-size: 0.88rem"
+                        >Emergency Relay Node #3</strong
+                      >
+                      <p class="subtext" style="font-size: 0.76rem">
+                        380m away · Signal 58% · Active Mesh Relay
+                      </p>
+                    </div>
+                  </div>
+                  <span class="badge badge-live" style="font-size: 0.7rem"
+                    >Relay</span
+                  >
+                </div>
               </div>
 
-              <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-card-muted); padding: 0.75rem 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border);">
-                <div style="display: flex; align-items: center; gap: 0.75rem;">
-                  <span style="font-size: 1.2rem;">📡</span>
-                  <div>
-                    <strong style="font-size: 0.88rem;">Emergency Relay Node #3</strong>
-                    <p class="subtext" style="font-size: 0.76rem;">380m away · Signal 58% · Active Mesh Relay</p>
-                  </div>
-                </div>
-                <span class="badge badge-live" style="font-size: 0.7rem;">Relay</span>
+              <div style="display: flex; gap: 0.75rem; flex-wrap: wrap">
+                <button
+                  id="btn-broadcast-beacon"
+                  class="btn btn-primary btn-sm"
+                  style="flex: 1"
+                >
+                  📡 Broadcast Distress Beacon (300m)
+                </button>
+                <button id="btn-scan-mesh" class="btn btn-secondary btn-sm">
+                  ⚡ Scan Nearby (300-400m)
+                </button>
               </div>
-            </div>
-
-            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-              <button id="btn-broadcast-beacon" class="btn btn-primary btn-sm" style="flex: 1;">📡 Broadcast Distress Beacon (300m)</button>
-              <button id="btn-scan-mesh" class="btn btn-secondary btn-sm">⚡ Scan Nearby (300-400m)</button>
             </div>
           </div>
-        </div>
 
-
-        <div class="dashboard-sidebar">
-          <h3 class="heading-md" style="margin-bottom: 1rem;">Emergency Contacts</h3>
-          <div id="emergency-contacts-list" style="margin-bottom: 1.5rem;"></div>
-          <button id="add-contact-btn" class="btn btn-secondary btn-full">+ Add contact</button>
-        </div>
-      </div>
-    </section>
-
-    <!-- 5. SAFETY TAB -->
-    <section id="tab-safety" class="tab-panel">
-      <div class="dashboard-layout">
-        <div class="dashboard-main">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-            <div>
-              <h2 class="heading-lg">Your people</h2>
-              <p class="subtext">Stay connected when conditions change.</p>
-            </div>
-            <button id="btn-invite-safety" class="btn btn-primary">+ Invite</button>
+          <div class="dashboard-sidebar">
+            <h3 class="heading-md" style="margin-bottom: 1rem">
+              Emergency Contacts
+            </h3>
+            <div
+              id="emergency-contacts-list"
+              style="margin-bottom: 1.5rem"
+            ></div>
+            <button id="add-contact-btn" class="btn btn-secondary btn-full">
+              + Add contact
+            </button>
           </div>
-          <div id="safety-people-list"></div>
         </div>
-        <div class="dashboard-sidebar" style="padding: 0;">
-          <div id="safety-leaflet-map" style="width: 100%; height: 100%; min-height: 400px;"></div>
+      </section>
+
+      <!-- 5. SAFETY TAB -->
+      <section id="tab-safety" class="tab-panel">
+        <div class="dashboard-layout">
+          <div class="dashboard-main">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 1.5rem;
+              "
+            >
+              <div>
+                <h2 class="heading-lg">Your people</h2>
+                <p class="subtext">Stay connected when conditions change.</p>
+              </div>
+              <button id="btn-invite-safety" class="btn btn-primary">
+                + Invite
+              </button>
+            </div>
+            <div id="safety-people-list"></div>
+          </div>
+          <div class="dashboard-sidebar" style="padding: 0">
+            <div
+              id="safety-leaflet-map"
+              style="width: 100%; height: 100%; min-height: 400px"
+            ></div>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+
+      <!-- 6. SHELTERS TAB -->
+      <section id="tab-shelters" class="tab-panel">
+        <div class="dashboard-layout">
+          <div class="dashboard-main" style="padding: 0">
+            <div
+              id="shelters-leaflet-map"
+              style="width: 100%; height: calc(100vh - 64px)"
+            ></div>
+          </div>
+          <div class="dashboard-sidebar">
+            <h3 class="heading-md">Nearby safe shelters</h3>
+            <p class="subtext" style="margin-bottom: 1.5rem">
+              Sorted by real proximity · Live capacity
+            </p>
+            <div id="shelters-list"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Mobile Nav Overlay & Menu -->
+    <div id="mobile-nav-overlay" class="mobile-nav-overlay"></div>
+    <nav id="mobile-nav-menu" class="mobile-nav-menu">
+      <a href="#overview" class="nav-tab active" data-tab="overview"
+        >📊 Overview</a
+      >
+      <a href="#map" class="nav-tab" data-tab="map">🗺️ Map</a>
+      <a href="#alerts" class="nav-tab" data-tab="alerts"
+        >🔔 Alerts
+        <span
+          id="mobile-nav-alerts-badge"
+          class="badge badge-critical"
+          style="padding: 2px 6px; font-size: 0.7rem; display: none"
+        ></span
+      ></a>
+
+      <a href="#emergency" class="nav-tab" data-tab="emergency">🚨 Emergency</a>
+      <a href="#safety" class="nav-tab" data-tab="safety">🛡️ Safety</a>
+      <a href="#shelters" class="nav-tab" data-tab="shelters">🏠 Shelters</a>
+      <hr
+        style="
+          border: none;
+          border-top: 1px solid var(--border);
+          margin: 0.5rem 0;
+        "
+      />
+      <a
+        href="profile.html"
+        style="padding: 0.75rem 1rem; font-size: 1rem; font-weight: 500"
+        >👤 Profile</a
+      >
+    </nav>
 
     <!-- 6. SHELTERS TAB -->
     <section id="tab-shelters" class="tab-panel">
@@ -316,10 +810,30 @@
         <div class="dashboard-main shelter-map-container" style="padding: 0;">
           <div id="shelters-leaflet-map" style="width: 100%; height: 100%; min-height: calc(100vh - 64px);"></div>
         </div>
-        <div class="dashboard-sidebar">
-          <h3 class="heading-md">Nearby safe shelters</h3>
-          <p class="subtext" style="margin-bottom: 1.5rem;">Sorted by real proximity · Live capacity</p>
-          <div id="shelters-list"></div>
+
+        <div class="form-group" style="position: relative">
+          <input
+            type="text"
+            id="modal-search-input"
+            class="form-input"
+            placeholder="Search city, area or pincode (e.g. Hazratganj)..."
+          />
+          <div
+            id="modal-search-results"
+            class="card"
+            style="
+              display: none;
+              position: absolute;
+              top: 100%;
+              left: 0;
+              right: 0;
+              z-index: 10;
+              margin-top: 4px;
+              padding: 0.5rem 0;
+              max-height: 200px;
+              overflow-y: auto;
+            "
+          ></div>
         </div>
       </div>
     </section>
@@ -608,109 +1122,309 @@
         <div id="modal-search-results" class="card" style="display: none; position: absolute; top: 100%; left: 0; right: 0; z-index: 10; margin-top: 4px; padding: 0.5rem 0; max-height: 200px; overflow-y: auto;"></div>
       </div>
 
-      <button id="modal-gps-btn" class="btn btn-secondary btn-full" style="margin-bottom: 1.5rem;">
-        ⊕ Use my current GPS location
-      </button>
+        <button
+          id="modal-gps-btn"
+          class="btn btn-secondary btn-full"
+          style="margin-bottom: 1.5rem"
+        >
+          ⊕ Use my current GPS location
+        </button>
 
-      <p class="label-caps" style="margin-bottom: 0.5rem;">QUICK LOCATIONS</p>
-      <div class="card" style="padding: 0; max-height: 220px; overflow-y: auto;">
-        <div class="modal-quick-loc" data-name="Lucknow, Uttar Pradesh" data-lat="26.8467" data-lng="80.9462" style="padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); cursor: pointer;">📍 Lucknow, Uttar Pradesh</div>
-        <div class="modal-quick-loc" data-name="Guwahati, Assam" data-lat="26.1445" data-lng="91.7362" style="padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); cursor: pointer;">📍 Guwahati, Assam</div>
-        <div class="modal-quick-loc" data-name="Silchar, Assam" data-lat="24.8333" data-lng="92.7789" style="padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); cursor: pointer;">📍 Silchar, Assam</div>
-        <div class="modal-quick-loc" data-name="New Delhi, Delhi" data-lat="28.6139" data-lng="77.2090" style="padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); cursor: pointer;">📍 New Delhi</div>
-        <div class="modal-quick-loc" data-name="Mumbai, Maharashtra" data-lat="19.0760" data-lng="72.8777" style="padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); cursor: pointer;">📍 Mumbai, Maharashtra</div>
-        <div class="modal-quick-loc" data-name="Kolkata, West Bengal" data-lat="22.5726" data-lng="88.3639" style="padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); cursor: pointer;">📍 Kolkata, West Bengal</div>
-        <div class="modal-quick-loc" data-name="Patna, Bihar" data-lat="25.5941" data-lng="85.1376" style="padding: 0.75rem 1rem; cursor: pointer;">📍 Patna, Bihar</div>
+        <p class="label-caps" style="margin-bottom: 0.5rem">QUICK LOCATIONS</p>
+        <div
+          class="card"
+          style="padding: 0; max-height: 220px; overflow-y: auto"
+        >
+          <div
+            class="modal-quick-loc"
+            data-name="Lucknow, Uttar Pradesh"
+            data-lat="26.8467"
+            data-lng="80.9462"
+            style="
+              padding: 0.75rem 1rem;
+              border-bottom: 1px solid var(--border);
+              cursor: pointer;
+            "
+          >
+            📍 Lucknow, Uttar Pradesh
+          </div>
+          <div
+            class="modal-quick-loc"
+            data-name="Guwahati, Assam"
+            data-lat="26.1445"
+            data-lng="91.7362"
+            style="
+              padding: 0.75rem 1rem;
+              border-bottom: 1px solid var(--border);
+              cursor: pointer;
+            "
+          >
+            📍 Guwahati, Assam
+          </div>
+          <div
+            class="modal-quick-loc"
+            data-name="Silchar, Assam"
+            data-lat="24.8333"
+            data-lng="92.7789"
+            style="
+              padding: 0.75rem 1rem;
+              border-bottom: 1px solid var(--border);
+              cursor: pointer;
+            "
+          >
+            📍 Silchar, Assam
+          </div>
+          <div
+            class="modal-quick-loc"
+            data-name="New Delhi, Delhi"
+            data-lat="28.6139"
+            data-lng="77.2090"
+            style="
+              padding: 0.75rem 1rem;
+              border-bottom: 1px solid var(--border);
+              cursor: pointer;
+            "
+          >
+            📍 New Delhi
+          </div>
+          <div
+            class="modal-quick-loc"
+            data-name="Mumbai, Maharashtra"
+            data-lat="19.0760"
+            data-lng="72.8777"
+            style="
+              padding: 0.75rem 1rem;
+              border-bottom: 1px solid var(--border);
+              cursor: pointer;
+            "
+          >
+            📍 Mumbai, Maharashtra
+          </div>
+          <div
+            class="modal-quick-loc"
+            data-name="Kolkata, West Bengal"
+            data-lat="22.5726"
+            data-lng="88.3639"
+            style="
+              padding: 0.75rem 1rem;
+              border-bottom: 1px solid var(--border);
+              cursor: pointer;
+            "
+          >
+            📍 Kolkata, West Bengal
+          </div>
+          <div
+            class="modal-quick-loc"
+            data-name="Patna, Bihar"
+            data-lat="25.5941"
+            data-lng="85.1376"
+            style="padding: 0.75rem 1rem; cursor: pointer"
+          >
+            📍 Patna, Bihar
+          </div>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- 2. Add / Edit Contact Modal -->
-  <div id="add-contact-modal" class="modal-backdrop">
-    <div class="modal-content">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-        <h3 class="heading-md" id="contact-modal-title">Add Emergency Contact</h3>
-        <button id="close-contact-modal" style="font-size: 1.5rem; cursor: pointer; color: var(--text-muted);">&times;</button>
+    <!-- 2. Add / Edit Contact Modal -->
+    <div id="add-contact-modal" class="modal-backdrop">
+      <div class="modal-content">
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+          "
+        >
+          <h3 class="heading-md" id="contact-modal-title">
+            Add Emergency Contact
+          </h3>
+          <button
+            id="close-contact-modal"
+            style="font-size: 1.5rem; cursor: pointer; color: var(--text-muted)"
+          >
+            &times;
+          </button>
+        </div>
+
+        <form id="add-contact-form">
+          <input type="hidden" id="contact-edit-id" value="" />
+          <div class="form-group">
+            <label class="form-label" for="contact-name">Full Name</label>
+            <input
+              type="text"
+              id="contact-name"
+              class="form-input"
+              placeholder="e.g. Robert Johnson"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="contact-relation"
+              >Relationship</label
+            >
+            <input
+              type="text"
+              id="contact-relation"
+              class="form-input"
+              placeholder="e.g. Father, Spouse, Friend"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="contact-phone">Phone Number</label>
+            <input
+              type="tel"
+              id="contact-phone"
+              class="form-input"
+              placeholder="+91 98765 11111"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="contact-email"
+              >Email (Optional)</label
+            >
+            <input
+              type="email"
+              id="contact-email"
+              class="form-input"
+              placeholder="contact@example.com"
+            />
+          </div>
+          <button
+            type="submit"
+            class="btn btn-primary btn-full"
+            id="contact-submit-btn"
+            style="margin-top: 1rem"
+          >
+            Save Contact
+          </button>
+        </form>
       </div>
-
-      <form id="add-contact-form">
-        <input type="hidden" id="contact-edit-id" value="">
-        <div class="form-group">
-          <label class="form-label" for="contact-name">Full Name</label>
-          <input type="text" id="contact-name" class="form-input" placeholder="e.g. Robert Johnson" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="contact-relation">Relationship</label>
-          <input type="text" id="contact-relation" class="form-input" placeholder="e.g. Father, Spouse, Friend" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="contact-phone">Phone Number</label>
-          <input type="tel" id="contact-phone" class="form-input" placeholder="+91 98765 11111" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="contact-email">Email (Optional)</label>
-          <input type="email" id="contact-email" class="form-input" placeholder="contact@example.com">
-        </div>
-        <button type="submit" class="btn btn-primary btn-full" id="contact-submit-btn" style="margin-top: 1rem;">Save Contact</button>
-      </form>
     </div>
-  </div>
 
-  <!-- 3. SOS Confirmation & Status Modal -->
-  <div id="sos-modal" class="modal-backdrop">
-    <div class="modal-content" style="text-align: center; max-width: 440px;">
-      <div style="font-size: 3rem; margin-bottom: 0.5rem;">🚨</div>
-      <h3 class="heading-md" style="margin-bottom: 0.5rem; color: var(--accent-red);">CONFIRM EMERGENCY SOS</h3>
-      <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.5;">
-        You are about to dispatch an emergency distress signal with your live GPS location (<strong id="sos-modal-location">Lucknow</strong>) to all registered emergency contacts.
-      </p>
+    <!-- 3. SOS Confirmation & Status Modal -->
+    <div id="sos-modal" class="modal-backdrop">
+      <div class="modal-content" style="text-align: center; max-width: 440px">
+        <div style="font-size: 3rem; margin-bottom: 0.5rem">🚨</div>
+        <h3
+          class="heading-md"
+          style="margin-bottom: 0.5rem; color: var(--accent-red)"
+        >
+          CONFIRM EMERGENCY SOS
+        </h3>
+        <p
+          style="
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+          "
+        >
+          You are about to dispatch an emergency distress signal with your live
+          GPS location (<strong id="sos-modal-location">Lucknow</strong>) to all
+          registered emergency contacts.
+        </p>
 
-      <div style="background: #FFF9F5; border: 1px dashed var(--accent-red); border-radius: var(--radius-sm); padding: 0.75rem; margin-bottom: 1.5rem; font-size: 0.82rem; color: var(--text-secondary);">
-        ⚡ Automated SMS and push notifications will be sent immediately.
-      </div>
+        <div
+          style="
+            background: #fff9f5;
+            border: 1px dashed var(--accent-red);
+            border-radius: var(--radius-sm);
+            padding: 0.75rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+          "
+        >
+          ⚡ Automated SMS and push notifications will be sent immediately.
+        </div>
 
-      <div style="display: flex; gap: 0.75rem;">
-        <button id="btn-cancel-sos" class="btn btn-secondary btn-full">Cancel</button>
-        <button id="btn-confirm-sos" class="btn btn-danger btn-full">Confirm & Send SOS</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- 4. Safety Circle Invite & Add Person Modal -->
-  <div id="invite-modal" class="modal-backdrop">
-    <div class="modal-content" style="max-width: 480px;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
-        <h3 class="heading-md">Invite to Safety Circle</h3>
-        <button id="close-invite-modal" style="font-size: 1.5rem; cursor: pointer; color: var(--text-muted);">&times;</button>
-      </div>
-
-      <p class="subtext" style="font-size: 0.9rem; margin-bottom: 1.25rem;">
-        Share this unique invite link with family, friends, or neighbors so they can join your safety circle and receive live flood alerts.
-      </p>
-
-      <div class="form-group">
-        <label class="form-label">Unique Invite Link</label>
-        <div style="display: flex; gap: 0.5rem;">
-          <input type="text" id="invite-link-input" class="form-input" readonly value="" style="font-size: 0.85rem;">
-          <button id="btn-copy-invite-modal" class="btn btn-primary" style="white-space: nowrap;">Copy Link</button>
+        <div style="display: flex; gap: 0.75rem">
+          <button id="btn-cancel-sos" class="btn btn-secondary btn-full">
+            Cancel
+          </button>
+          <button id="btn-confirm-sos" class="btn btn-danger btn-full">
+            Confirm & Send SOS
+          </button>
         </div>
       </div>
-
-      <div style="display: flex; align-items: center; text-align: center; margin: 1.25rem 0; color: var(--text-muted); font-size: 0.85rem;">
-        <span style="flex:1; border-bottom:1px solid var(--border);"></span>
-        <span style="padding: 0 0.75rem;">or add directly</span>
-        <span style="flex:1; border-bottom:1px solid var(--border);"></span>
-      </div>
-
-      <button id="btn-open-add-contact-direct" class="btn btn-secondary btn-full">
-        + Add Person / Contact Directly
-      </button>
     </div>
-  </div>
 
-  <script src="../js/services/api.js?v=20260821-3"></script>
-  <script src="../js/services/auth.service.js"></script>
-  <script src="../js/pages/dashboard.js?v=20260821-3"></script>
+    <!-- 4. Safety Circle Invite & Add Person Modal -->
+    <div id="invite-modal" class="modal-backdrop">
+      <div class="modal-content" style="max-width: 480px">
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+          "
+        >
+          <h3 class="heading-md">Invite to Safety Circle</h3>
+          <button
+            id="close-invite-modal"
+            style="font-size: 1.5rem; cursor: pointer; color: var(--text-muted)"
+          >
+            &times;
+          </button>
+        </div>
 
-</body>
+        <p class="subtext" style="font-size: 0.9rem; margin-bottom: 1.25rem">
+          Share this unique invite link with family, friends, or neighbors so
+          they can join your safety circle and receive live flood alerts.
+        </p>
+
+        <div class="form-group">
+          <label class="form-label">Unique Invite Link</label>
+          <div style="display: flex; gap: 0.5rem">
+            <input
+              type="text"
+              id="invite-link-input"
+              class="form-input"
+              readonly
+              value=""
+              style="font-size: 0.85rem"
+            />
+            <button
+              id="btn-copy-invite-modal"
+              class="btn btn-primary"
+              style="white-space: nowrap"
+            >
+              Copy Link
+            </button>
+          </div>
+        </div>
+
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 1.25rem 0;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+          "
+        >
+          <span style="flex: 1; border-bottom: 1px solid var(--border)"></span>
+          <span style="padding: 0 0.75rem">or add directly</span>
+          <span style="flex: 1; border-bottom: 1px solid var(--border)"></span>
+        </div>
+
+        <button
+          id="btn-open-add-contact-direct"
+          class="btn btn-secondary btn-full"
+        >
+          + Add Person / Contact Directly
+        </button>
+      </div>
+    </div>
+
+    <script src="../js/services/api.js?v=20260821-3"></script>
+    <script src="../js/services/auth.service.js"></script>
+    <script src="../js/pages/dashboard.js?v=20260821-3"></script>
+  </body>
 </html>
