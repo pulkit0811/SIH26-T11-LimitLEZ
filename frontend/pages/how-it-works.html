@@ -65,7 +65,7 @@
   <section style="padding: 2.5rem 1.25rem 2rem; text-align: center; max-width: 840px; margin: 0 auto;">
     <div style="display: inline-flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
       <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--accent-orange);"></span>
-      <span class="label-caps" style="color: var(--accent-orange-hover);">PLATFORM ARCHITECTURE & WORKFLOW</span>
+      <span class="label-caps" style="color: var(--accent-orange-hover);">HOW IT WORKS</span>
     </div>
 
     <h1 class="heading-xl" style="font-weight: 800; margin-bottom: 1.25rem;">
@@ -73,20 +73,20 @@
     </h1>
 
     <p style="font-size: 1.05rem; color: var(--text-secondary); line-height: 1.6; max-width: 680px; margin: 0 auto 2rem;">
-      LimitFLOOD combines live meteorological telemetry, soil saturation index computing, and automated emergency dispatches into a hyper-local flood risk warning system.
+      LimitFLOOD uses live weather data, soil moisture tracking, and automatic emergency alerts to warn you about floods in your area.
     </p>
 
     <!-- Visual Flow Ribbon -->
     <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0.5rem; background: var(--bg-card); padding: 0.85rem 1rem; border-radius: var(--radius-lg); border: 1px solid var(--border); box-shadow: var(--shadow-sm);">
       <span class="flow-badge">📍 Location</span>
       <span style="color: var(--text-muted);">→</span>
-      <span class="flow-badge">📡 Open-Meteo API</span>
+      <span class="flow-badge">📡 Weather Data</span>
       <span style="color: var(--text-muted);">→</span>
-      <span class="flow-badge">📊 Hydrologic Risk Engine</span>
+      <span class="flow-badge">📊 Risk Calculator</span>
       <span style="color: var(--text-muted);">→</span>
       <span class="flow-badge">🗺️ Interactive Map</span>
       <span style="color: var(--text-muted);">→</span>
-      <span class="flow-badge">🚨 SOS Dispatch</span>
+      <span class="flow-badge">🚨 Emergency Alert</span>
     </div>
   </section>
 
@@ -100,34 +100,34 @@
         <div class="step-num">1</div>
         <h3 class="heading-md" style="margin-bottom: 0.5rem;">Select & Monitor Location</h3>
         <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.55;">
-          Users specify any city, locality, or exact GPS coordinates. LimitFLOOD leverages OpenStreetMap Nominatim reverse geocoding to resolve hyper-local monitoring zones across India.
+          Search for any city or area. LimitFLOOD pinpoints your location to track flood risk right where you are.
         </p>
       </div>
 
       <!-- Step 2 -->
       <div class="step-card">
         <div class="step-num">2</div>
-        <h3 class="heading-md" style="margin-bottom: 0.5rem;">Live Telemetry Collection</h3>
+        <h3 class="heading-md" style="margin-bottom: 0.5rem;">Live Weather Updates</h3>
         <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.55;">
-          Real-time weather API integration pulls 1-hour precipitation intensity, 24-hour accumulated rainfall, surface temperature, wind speed, and topsoil moisture levels (0–1cm depth).
+          We pull current rainfall, temperature, wind, and soil moisture data from live weather sources — updated every few seconds.
         </p>
       </div>
 
       <!-- Step 3 -->
       <div class="step-card">
         <div class="step-num">3</div>
-        <h3 class="heading-md" style="margin-bottom: 0.5rem;">Multi-Factor Risk Scoring</h3>
+        <h3 class="heading-md" style="margin-bottom: 0.5rem;">Flood Risk Score</h3>
         <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.55;">
-          Our backend risk engine evaluates rainfall volume (45%), instantaneous rain rate (30%), and soil absorption capacity (25%) to output a transparent 0–100 Flood Risk Index categorized into Low, Moderate, High, or Critical.
+          We combine how much it's raining (45%), how fast it's raining (30%), and how soaked the ground is (25%) into a simple 0–100 score: Low, Moderate, High, or Critical.
         </p>
       </div>
 
       <!-- Step 4 -->
       <div class="step-card">
         <div class="step-num">4</div>
-        <h3 class="heading-md" style="margin-bottom: 0.5rem;">Interactive Map Visualization</h3>
+        <h3 class="heading-md" style="margin-bottom: 0.5rem;">Live Flood Map</h3>
         <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.55;">
-          Leaflet.js mapping renders risk contours, radius perimeters, nearby emergency evacuation shelters, and live occupancy status in real time.
+          The map shows danger zones, nearby shelters, and how full each shelter is — all in real time.
         </p>
       </div>
 
@@ -136,7 +136,7 @@
         <div class="step-num">5</div>
         <h3 class="heading-md" style="margin-bottom: 0.5rem;">Alerts & Warning Notices</h3>
         <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.55;">
-          Active monitoring automatically triggers flash flood alerts and safe shelter route navigation as rainfall thresholds exceed critical boundaries.
+          When rain gets dangerously heavy, you'll get a flood alert and directions to the nearest safe shelter.
         </p>
       </div>
 
@@ -145,7 +145,7 @@
         <div class="step-num">6</div>
         <h3 class="heading-md" style="margin-bottom: 0.5rem;">Emergency Contact & SOS Network</h3>
         <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.55;">
-          Pressing and holding the Emergency SOS button dispatches automated distress broadcasts with live GPS location to configured family and safety circle contacts.
+          Press and hold the SOS button to instantly share your live location with your emergency contacts.
         </p>
       </div>
 
@@ -156,7 +156,7 @@
   <section style="background: var(--bg-dark); color: #fff; padding: 4rem 1.5rem; text-align: center;">
     <h2 class="heading-lg" style="color: #fff; margin-bottom: 1rem;">Ready to monitor your local flood risk?</h2>
     <p style="color: #aaa; font-size: 1.05rem; margin-bottom: 2rem; max-width: 500px; margin-left: auto; margin-right: auto;">
-      Access live meteorological intelligence and emergency safety tools built for moments when it matters.
+      Get live flood alerts and emergency tools — ready when you need them.
     </p>
     <a href="dashboard.html" class="btn" style="background: var(--accent-orange); color: #fff; padding: 0.9rem 2rem; font-size: 1rem; border-radius: var(--radius-sm);">Launch Live Dashboard →</a>
   </section>
