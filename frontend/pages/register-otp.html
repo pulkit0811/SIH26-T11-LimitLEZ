@@ -50,7 +50,7 @@
   <script src="../js/services/auth.service.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const phone = sessionStorage.getItem('temp_verify_phone') || '+91 98765 43210';
+      const phone = (sessionStorage.getItem('temp_verify_phone') || '+91 98765 43210').trim();
       const devOtp = sessionStorage.getItem('temp_dev_otp');
       
       document.getElementById('display-phone').textContent = phone;
@@ -78,7 +78,7 @@
             window.location.href = 'location-setup.html';
           }
         } catch (error) {
-          errorBanner.textContent = error.message || 'Invalid OTP code';
+          errorBanner.textContent = error.message || 'Invalid OTP code. Please check your 6-digit code and try again.';
           errorBanner.style.display = 'block';
         } finally {
           submitBtn.disabled = false;
