@@ -972,11 +972,22 @@ document.addEventListener('DOMContentLoaded', () => {
     sosBtn.addEventListener('mousedown', startSOS);
     sosBtn.addEventListener('mouseup', cancelSOS);
     sosBtn.addEventListener('mouseleave', cancelSOS);
-    sosBtn.addEventListener('touchstart', startSOS);
-    sosBtn.addEventListener('touchend', cancelSOS);
+    sosBtn.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      startSOS();
+    }, { passive: false });
+    sosBtn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      cancelSOS();
+    });
+    sosBtn.addEventListener('touchcancel', (e) => {
+      e.preventDefault();
+      cancelSOS();
+    });
   }
 
   function startSOS() {
+    clearTimeout(sosTimer);
     sosBtn.classList.add('activating');
     sosTimer = setTimeout(() => {
       sosBtn.classList.remove('activating');
