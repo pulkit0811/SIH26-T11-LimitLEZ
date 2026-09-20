@@ -104,11 +104,19 @@
 
         debounceTimer = setTimeout(async () => {
           try {
-            const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`);
-            const data = await res.json();
+            let items = [];
+            try {
+              const res = await ApiService.get(`/locations/search?q=${encodeURIComponent(query)}`);
+              if (res && res.success && Array.isArray(res.results)) {
+                items = res.results.map(r => ({ display_name: r.displayName || r.name, lat: r.lat, lon: r.lng }));
+              }
+            } catch (apiErr) {
+              const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`);
+              items = await res.json();
+            }
             
-            if (data.length > 0) {
-              searchResults.innerHTML = data.slice(0, 5).map(item => `
+            if (items.length > 0) {
+              searchResults.innerHTML = items.slice(0, 5).map(item => `
                 <div class="search-item" style="padding: 0.6rem 1rem; cursor: pointer; border-bottom: 1px solid #eee; font-size: 0.85rem;" data-name="${item.display_name}" data-lat="${item.lat}" data-lng="${item.lon}">
                   📍 ${item.display_name}
                 </div>

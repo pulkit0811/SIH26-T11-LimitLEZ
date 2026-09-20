@@ -440,9 +440,9 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 
-  // 4. Initialize Maps (Standard Vibrant OpenStreetMap)
-  const VIBRANT_MAP_TILES = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-  const MAP_ATTR = '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+  // 4. Initialize Maps (CARTO Voyager tiles powered by OpenStreetMap data)
+  const VIBRANT_MAP_TILES = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+  const MAP_ATTR = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>';
 
 
 
@@ -451,7 +451,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // A. Overview Mini Map
     if (document.getElementById('overview-mini-map')) {
       overviewMap = L.map('overview-mini-map', { zoomControl: false, dragging: false, scrollWheelZoom: false }).setView([selectedLoc.lat, selectedLoc.lng], 13);
-      L.tileLayer(VIBRANT_MAP_TILES, { maxZoom: 19, attribution: MAP_ATTR }).addTo(overviewMap);
+      L.tileLayer(VIBRANT_MAP_TILES, { maxZoom: 19, subdomains: 'abcd', attribution: MAP_ATTR }).addTo(overviewMap);
       window.overviewMarker = L.marker([selectedLoc.lat, selectedLoc.lng]).addTo(overviewMap);
     }
 
@@ -460,6 +460,7 @@ document.addEventListener('DOMContentLoaded', () => {
       mainMap = L.map('main-leaflet-map').setView([selectedLoc.lat, selectedLoc.lng], 13);
       L.tileLayer(VIBRANT_MAP_TILES, {
         maxZoom: 19,
+        subdomains: 'abcd',
         attribution: MAP_ATTR
       }).addTo(mainMap);
 
@@ -491,13 +492,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // C. Safety Circle Map
     if (document.getElementById('safety-leaflet-map')) {
       safetyMap = L.map('safety-leaflet-map').setView([selectedLoc.lat, selectedLoc.lng], 12);
-      L.tileLayer(VIBRANT_MAP_TILES, { maxZoom: 19, attribution: MAP_ATTR }).addTo(safetyMap);
+      L.tileLayer(VIBRANT_MAP_TILES, { maxZoom: 19, subdomains: 'abcd', attribution: MAP_ATTR }).addTo(safetyMap);
     }
 
     // D. Shelters Map
     if (document.getElementById('shelters-leaflet-map')) {
       sheltersMap = L.map('shelters-leaflet-map').setView([selectedLoc.lat, selectedLoc.lng], 12);
-      L.tileLayer(VIBRANT_MAP_TILES, { maxZoom: 19, attribution: MAP_ATTR }).addTo(sheltersMap);
+      L.tileLayer(VIBRANT_MAP_TILES, { maxZoom: 19, subdomains: 'abcd', attribution: MAP_ATTR }).addTo(sheltersMap);
     }
   }
 

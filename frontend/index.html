@@ -150,9 +150,10 @@
     document.addEventListener('DOMContentLoaded', async () => {
       // 1. Leaflet Map Initialization
       const map = L.map('landing-map', { zoomControl: false }).setView([26.8467, 80.9462], 12);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
         maxZoom: 19,
-        attribution: '© OpenStreetMap contributors'
+        subdomains: 'abcd',
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
       }).addTo(map);
 
       L.circle([26.8467, 80.9462], {
